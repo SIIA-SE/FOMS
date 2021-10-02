@@ -33,9 +33,7 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="#">Home</a>
-                        </li>
+                        
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -75,13 +73,23 @@
         </nav>
 
         <main class="py-4">
+            
             @auth 
                 <div class="container">
+                    @if(session()->has('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            {{ session()->get('success')}}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+
+                    @endif
                     <div class="row">
                         <div class="col-md-4">
                             <ul class="list-group">
                                 <li class="list-group-item">
-                                    <a href="">Institutes</a>
+                                    <a href="{{route('institutes.index')}}">Institutes</a>
                                 </li>
                                 <li class="list-group-item">
                                     <a href="">Customers</a>
@@ -103,5 +111,6 @@
 
         </main>
     </div>
+    @yield('scripts')
 </body>
 </html>

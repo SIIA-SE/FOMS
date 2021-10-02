@@ -15,6 +15,12 @@ class CreateInstitutesTable extends Migration
     {
         Schema::create('institutes', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('contact_no');
+            $table->string('address');
+            $table->string('code');
+            $table->string('image');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
