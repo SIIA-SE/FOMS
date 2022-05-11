@@ -99,6 +99,8 @@ class InstituteController extends Controller
         if ($request->hasFile('image')) {
             if($request->file('image')->isValid()){
             
+
+                
                 $image = $request->image->store('institutes');
 
             }

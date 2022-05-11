@@ -10,7 +10,7 @@
     @forelse($institutes as $institute)
 
         <div class="d-inline-block mt-4 mr-4 card" style="width: 18rem;">
-            <img class="card-img-top" src="{{ asset('/storage/' . $institute->image) }}" alt="Card image cap">
+            <img class="card-img-top" src="{{asset('/storage/' . $institute->image)}}" alt="{{$institute->name}}">
             <div class="card-body">
                 <h5 class="card-title">{{$institute->name}}</h5>
                 <p class="card-text">Institute Code: {{$institute->code}}</p>

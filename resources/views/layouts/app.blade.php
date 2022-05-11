@@ -92,7 +92,13 @@
                                     <a href="{{route('institutes.index')}}">Institutes</a>
                                 </li>
                                 <li class="list-group-item">
-                                    <a href="">Customers</a>
+                                    <a href="{{route('customers.index')}}">Customers</a>
+                                </li>
+                            </ul>
+
+                            <ul class="list-group mt-5">
+                                <li class="list-group-item">
+                                    <a href="#">Deleted Items</a>
                                 </li>
                             </ul>
 
