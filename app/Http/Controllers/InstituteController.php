@@ -128,12 +128,35 @@ class InstituteController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Institute $institute)
+    public function destroy($id)
     {
-        $institute->delete();
+        $institute = Institute::withTrashed()->where('id', $id)->firstOrFail();
+        
+        if($institute->trashed()){
+
+            $institute->forceDelete();
+
+        }else{
+
+            $institute->delete();
+
+        }
 
         session()->flash('success', 'Institute has been deleted Successfully!');
 
         return redirect(route('institutes.index'));
+    }
+
+        /**
+     * View trashed items  from storage.
+     *
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function trashed()
+    {
+        $trashed = Institute::onlyTrashed()->get();
+
+        return view('institutes.index')->with('institutes', $trashed);
     }
 }

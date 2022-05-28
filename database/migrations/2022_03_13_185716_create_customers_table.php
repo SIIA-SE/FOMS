@@ -21,8 +21,11 @@ class CreateCustomersTable extends Migration
             $table->string('nic_no', 12);
             $table->string('address')->nullable();
             $table->string('contact_no', 10)->nullable();
-            $table->string('gn_division');
+            $table->string('email')->nullable();
+            $table->string('province');
+            $table->string('district');
             $table->string('ds_division');
+            $table->string('gn_division');
             $table->softDeletes();
             $table->timestamps();
         });

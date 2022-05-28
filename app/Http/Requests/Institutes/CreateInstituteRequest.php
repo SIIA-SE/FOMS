@@ -25,11 +25,17 @@ class CreateInstituteRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:institutes',
-            'address' => 'required|regex:/[a-zA-z0-9-.,\/\s]/',
-            'contact_no' => 'required|numeric',
+            'name' => 'required|unique:institutes|min:10|max:255',
+            'address' => 'required|regex:/[a-z,A-Z\d\s\/\-]/',
+            'contact_no' => 'required|size:9|regex:/\d/',
             'image' => ['image', Rule::dimensions()->maxWidth(1024)->maxHeight(256)]
+        ];
+    }
 
+    public function messages()
+    {
+        return [
+            'contact_no.regex' => 'Contact No. format is invalid',
         ];
     }
 }

@@ -27,8 +27,15 @@ class UpdateInstituteRequest extends FormRequest
         return [
             'name' => ['required', Rule::unique('institutes')->ignore($this->institute->id)],
             'address' => 'required|regex:/[a-zA-z0-9-.,\/\s]/',
-            'contact_no' => 'required|numeric'
+            'contact_no' => 'required|size:9|regex:/\d/'
 
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'contact_no.regex' => 'Contact No. format is invalid',
         ];
     }
 }

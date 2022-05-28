@@ -19,6 +19,17 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
-Route::resource('institutes', 'InstituteController');
-Route::resource('customers', 'CustomerController');
+
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/home', 'HomeController@index')->name('home');
+    Route::resource('institutes', 'InstituteController');
+    Route::resource('customers', 'CustomerController');
+
+    Route::get('trashed-institutes', 'InstituteController@trashed')->name('trashed-institutes.index');
+    Route::get('getDistrictsList', 'DropdownController@getDistrictsList');
+    Route::get('getDSDivisionsList', 'DropdownController@getDSDivisionsList');
+    Route::get('getGNDivisionsList', 'DropdownController@getGNDivisionsList');
+    Route::get('customerSearch/action', 'CustomerController@autoComplete')->name('customer_search.action');
+});

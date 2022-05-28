@@ -14,9 +14,11 @@
             <div class="card-body">
                 <h5 class="card-title">{{$institute->name}}</h5>
                 <p class="card-text">Institute Code: {{$institute->code}}</p>
-                <a href="#" class="btn btn-primary btn-sm">Open</a>
-                <a href="{{route('institutes.edit', $institute->id)}}" class="btn btn-success btn-sm">Edit</a>
-                <a href="#" class="btn btn-danger btn-sm" onclick="handleDelete({{ $institute->id }})">Delete</a>
+                @if(!$institute->trashed())
+                    <a href="#" class="btn btn-primary btn-sm">Open</a>
+                    <a href="{{route('institutes.edit', $institute->id)}}" class="btn btn-success btn-sm">Edit</a>
+                @endif
+                <a href="#" class="btn btn-danger btn-sm" onclick="handleDelete({{ $institute->id }})">{{ $institute->trashed() ? 'Delete': 'Trash' }}</a>
             </div>
         </div>
         
@@ -40,7 +42,7 @@
                     </div>
                     <div class="modal-body">
                         <p class="text-center font-weight-bold">
-                            This action cannot be reverted, Do you want to continue?
+                            This will trash the selected item, Do you want to continue?
                         </p>
                     </div>
                     <div class="modal-footer">
