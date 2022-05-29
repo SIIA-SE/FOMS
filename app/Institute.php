@@ -10,6 +10,28 @@ class Institute extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'name', 'address', 'contact_no', 'code', 'image'
+        'name', 'user_id', 'address', 'contact_no', 'code', 'image'
     ];
+
+    ///Table name
+   protected $table = 'institutes';
+
+   //Primarykey
+   public $primaryKey = 'id';
+
+   //Timestamps
+   public $timestamps = true;
+
+   //link
+   public function staff(){
+       return $this->hasMany('App\Staff');
+   }
+   public function customers(){
+    return $this->hasMany('App\Customer');
+   }
+   public function user(){
+    return $this->beongsTo('App\User');
+   }
+
+
 }

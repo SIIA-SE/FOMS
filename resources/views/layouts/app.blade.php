@@ -19,6 +19,13 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
+
+
+    
 
     <!--Cropper JS -->
 
@@ -96,38 +103,19 @@
             
             @auth 
                 <div class="container">
-                    @if(session()->has('success'))
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            {{ session()->get('success')}}
+                    @if(session()->has('message'))
+                        <div class="alert alert-{{session()->get('alert-type')}} alert-dismissible fade show" role="alert">
+                            {{ session()->get('message')}}
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-
                     @endif
                     <div class="row">
                         <div class="col-md-4">
-                            <ul class="list-group">
-                                <li class="list-group-item">
-                                    <a href="{{route('institutes.index')}}">Institutes</a>
-                                </li>
-                                <li class="list-group-item">
-                                    <a href="{{route('customers.index')}}">Customers</a>
-                                </li>
-                            </ul>
-
-                            <ul class="list-group mt-5">
-                                <li class="list-group-item">
-                                    <a href="{{route('trashed-institutes.index')}}">Trashed Institutes</a>
-                                </li>
-                                <li class="list-group-item">
-                                    <a href="#">Trashed Customers</a>
-                                </li>
-                            </ul>
-
+                            @yield('menu')
                         </div>
                         <div class="col-md-8">
-                            <noscript>This page needs JavaScript activated to work.</noscript>
                             @yield('content')
                         </div>
                     </div>

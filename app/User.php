@@ -36,4 +36,21 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    ///Table name
+   protected $table = 'users';
+
+   //Primarykey
+   public $primaryKey = 'id';
+
+   //Timestamps
+   public $timestamps = true;
+
+   //link
+   public function institutes(){
+       return $this->hasMany('App\Institute');
+   }
+   public function staff(){
+    return $this->hasMany('App\Staff');
+}
 }

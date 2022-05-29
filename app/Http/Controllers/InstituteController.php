@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Institute;
+use App\Staff;
 use Illuminate\Support\Str;
 use App\Http\Requests\Institutes\CreateInstituteRequest;
 use App\Http\Requests\Institutes\UpdateInstituteRequest;
+use Illuminate\Support\Facades\Auth;
 
 class InstituteController extends Controller
 {
@@ -17,8 +19,17 @@ class InstituteController extends Controller
      */
     public function index()
     {
+        $userInstitutes = "";
+        $joinedInstitutes = "";
+
+        if(count(Auth::user()->institutes) > 0){
+            $userInstitutes = Auth::user()->institutes;
+        }
+        if(count(Auth::user()->staff) > 0){
+            $joinedInstitutes = Auth::user()->staff;
+        }
         //Return view
-        return view('institutes.index')->with('institutes', Institute::all());
+        return view('institutes.index')->with('userInstitutes', $userInstitutes)->with('joinedInstitutes', $joinedInstitutes);
     }
 
     /**
@@ -50,8 +61,9 @@ class InstituteController extends Controller
             $image = "institutes/default_institute.png";
         }
         
-        Institute::create([
+        $lastInstitute = Institute::create([
             'name' => $request->name,
+            'user_id' => Auth::id(),
             'address' => $request->address,
             'contact_no' => $request->contact_no,
             'code' => Str::random(4) . date('Ymd'),
@@ -59,7 +71,15 @@ class InstituteController extends Controller
 
         ]);
 
-        session()->flash('success', 'Institute has been created Successfully!');
+        Staff::create([
+            'user_id' => Auth::id(),
+            'institute_id' => $lastInstitute->id,
+            'status' => true,
+            'role' => 'sys_admin'
+        ]);
+
+        session()->flash('message', 'Institute has been created Successfully!');
+        session()->flash('alert-type', 'success');
 
         return redirect(route('institutes.index'));
     }
@@ -72,7 +92,25 @@ class InstituteController extends Controller
      */
     public function show($id)
     {
-        //
+        //View Institute
+        if($institute = Institute::find($id)){
+            
+            foreach($institute->staff as $staff){
+                if($staff->user_id == Auth::id()){
+                    return view('institutes.show')->with('institute', Institute::find($id));
+                }
+            }
+            session()->flash('message', 'You are not in the staff of the institute!');
+            session()->flash('alert-type', 'danger');
+            return redirect(route('institutes.index'));
+
+        }else{
+            session()->flash('message', 'Requested institute is not available or Trashed!');
+            session()->flash('alert-type', 'danger');
+            return redirect(route('home'));
+        }
+        
+        
     }
 
     /**
@@ -83,7 +121,40 @@ class InstituteController extends Controller
      */
     public function edit(Institute $institute)
     {
-        return view('institutes.create')->with('institute', $institute);
+        //Edit Institute
+        if($institute){
+            if(count(Auth::user()->institutes) > 0){
+                foreach(Auth::user()->institutes as $userInstitute){
+                    if($userInstitute->id == $institute->id){
+                        return view('institutes.create')->with('institute', $institute);
+                    }
+                }
+            }else if(count(Auth::user()->staff) > 0){
+                foreach(Auth::user()->staff as $staff){
+                    if($staff->institute_id == $institute->id){
+                        if($staff->role == "sys_admin"){
+                            return view('institutes.create')->with('institute', $institute);
+                        }else{
+                            session()->flash('message', 'You do not have permission to edit the institute!');
+                            session()->flash('alert-type', 'warning');
+                            return redirect(route('institutes.index'));
+                        }
+                    }    
+                }
+                session()->flash('message', 'You are not in the staff of the institute!');
+                session()->flash('alert-type', 'danger');
+                return redirect(route('institutes.index'));
+            }else{
+                session()->flash('message', 'You do not have permission to view the institute!');
+                session()->flash('alert-type', 'warning');
+                return redirect(route('home'));
+            }
+        }else{
+            session()->flash('message', 'Requested institute is not available!');
+            session()->flash('alert-type', 'danger');
+            return redirect(route('home'));
+        }
+        
     }
 
     /**
@@ -155,8 +226,34 @@ class InstituteController extends Controller
      */
     public function trashed()
     {
-        $trashed = Institute::onlyTrashed()->get();
+        $trashed = Auth::user()->institutes()->onlyTrashed()->get();
 
-        return view('institutes.index')->with('institutes', $trashed);
+       // dd(Auth::user()->institutes()->onlyTrashed()->get());
+        return view('institutes.index')->with('trashedInstitutes', $trashed);
+    }
+
+    public function joinInstitute(Request $request)
+    {
+        if($request->institute_id_button == "join"){
+            if($institute = Institute::firstWhere('code', $request->institute_id)){
+                Staff::create([
+                    'user_id' => Auth::id(),
+                    'institute_id' => $institute->id,
+                    'status' => 2,
+                    'role' => 'user'
+                ]);
+
+                session()->flash('message', 'Institute has been added Successfully!');
+                session()->flash('alert-type', 'success');
+
+                return redirect(route('institutes.index'));
+            }else{
+                session()->flash('message', 'Institute is not found!');
+                session()->flash('alert-type', 'danger');
+
+                return redirect(route('institutes.index'));
+            }
+        }
+
     }
 }

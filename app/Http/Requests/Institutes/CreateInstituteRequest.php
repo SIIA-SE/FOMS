@@ -25,9 +25,9 @@ class CreateInstituteRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:institutes|min:10|max:255',
+            'name' => 'required|min:10|max:255',
             'address' => 'required|regex:/[a-z,A-Z\d\s\/\-]/',
-            'contact_no' => 'required|size:9|regex:/\d/',
+            'contact_no' => 'required|unique:institutes|size:9|regex:/\d/',
             'image' => ['image', Rule::dimensions()->maxWidth(1024)->maxHeight(256)]
         ];
     }
