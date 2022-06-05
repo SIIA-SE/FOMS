@@ -1,5 +1,20 @@
 @extends('layouts.app')
 
+@section('menu')
+<div class="list-group">
+  <a href="{{route('customers.index', ['id' => $customer_inst->id])}}" class="list-group-item list-group-item-action {{ Route::is('customers.index') ? 'active' : '' }}"><i class="bi bi-person-video2"></i> Customers</a>
+  <a href="{{route('institutes.show', $customer_inst->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-diagram-3"></i> Branches</a>
+</div>
+
+<br />
+
+<div class="list-group">
+  <a href="{{route('add-staff.index', $customer_inst->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-plus-fill"></i> Staff Requests <span class="badge badge-danger">4</span></a>
+</div>
+
+<br />
+@endsection
+
 @section('content')
 
 <div class="card card-default">
@@ -22,7 +37,7 @@
 
 
         @endif-->
-        <form action="{{ isset($customer) ? route('customers.update', $customer->id) : route('customers.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ isset($customer) ? route('customers.update', $customer->id) : route('customers.store', ['institute_id' => $customer_inst->id]) }}" method="POST" enctype="multipart/form-data">
             @csrf 
             
             @if(isset($institute))

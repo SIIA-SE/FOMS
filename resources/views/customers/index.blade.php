@@ -1,8 +1,29 @@
 @extends('layouts.app')
 
+@section('menu')
+<div class="list-group">
+  <a href="{{route('institutes.show', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-chevron-left"></i>Back</a>
+  <a href="{{route('customers.index', ['id' => $institute->id])}}" class="list-group-item list-group-item-action {{ Route::is('customers.index') ? 'active' : '' }}"><i class="bi bi-person-video2"></i> Customers</a>
+  <a href="{{route('institutes.show', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-diagram-3"></i> Branches</a>
+</div>
+
+<br />
+
+<div class="list-group">
+  <a href="{{route('add-staff.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-plus-fill"></i> Staff Requests <span class="badge badge-danger">4</span></a>
+</div>
+
+<br />
+@endsection
+
 @section('content')
+<div class="row border-bottom">
+  <div class="col-auto"><h4 >{{ $institute->name }}</h4></div>
+  <div class="col-auto"><span class="badge badge-secondary">{{ $institute->code }}</span></div>
+</div>
+<br />
 <div class="d-flex justify-content-end mb-3">
-    <a href="{{route('customers.create')}}" class="btn btn-success float-right">Register New Customer</a>
+    <a href="{{route('customers.create', ['id' => $institute->id])}}" class="btn btn-success float-right">Register New Customer</a>
 </div>
 
 <h4>Search Customer</h4>
@@ -84,7 +105,7 @@
 
                 $.ajax({
 
-                    url:'{{ route('customer_search.action') }}',
+                    url:'{{ route('customer_search.action', ["institute_id" => $institute->id]) }}',
 
                     type:'GET',
 

@@ -97,7 +97,14 @@ class InstituteController extends Controller
             
             foreach($institute->staff as $staff){
                 if($staff->user_id == Auth::id()){
-                    return view('institutes.show')->with('institute', Institute::find($id));
+                    if($staff->status == "2"){
+                        session()->flash('message', 'Your request is to join the institute is pending..!');
+                        session()->flash('alert-type', 'warning');
+                        return redirect(route('institutes.index'));
+                    }elseif($staff->status == "1"){
+                        return view('institutes.show')->with('institute', $institute);
+                    }
+                    
                 }
             }
             session()->flash('message', 'You are not in the staff of the institute!');
@@ -243,7 +250,7 @@ class InstituteController extends Controller
                     'role' => 'user'
                 ]);
 
-                session()->flash('message', 'Institute has been added Successfully!');
+                session()->flash('message', 'Request to join the institute has been sent!');
                 session()->flash('alert-type', 'success');
 
                 return redirect(route('institutes.index'));
@@ -256,4 +263,31 @@ class InstituteController extends Controller
         }
 
     }
+    public function addStaff(Request $request){
+
+        $institute = Institute::find($request->id);
+
+        if($request->add_staff_button == "accept"){
+            $staff = Staff::find($request->id);
+            $staff->status = 1;
+            $staff->save();
+            session()->flash('message', 'Staff has beed added into your institute');
+            session()->flash('alert-type', 'success');
+
+            return redirect(route('institutes.show', Staff::find($request->id)->institute->id));
+        }
+
+        if($request->add_staff_button == "reject"){
+            $staff = Staff::find($request->id);
+            $staff->status = 0;
+            $staff->save();
+            session()->flash('message', 'Request has been rejected.');
+            session()->flash('alert-type', 'success');
+
+            return redirect(route('institutes.show', Staff::find($request->id)->institute->id));
+        }
+
+        return view('institutes.show')->with('institute', $institute);
+    }
+    
 }

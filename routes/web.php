@@ -29,7 +29,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('trashed-institutes', 'InstituteController@trashed')->name('trashed-institutes.index');
     Route::get('join-institute', 'InstituteController@joinInstitute')->name('join-institutes.index');
-    Route::get('institutes/{institute}/add-staff', 'InstituteController@addStaff')->name('add-staff.index');
+    Route::get('institutes/{id}/add-staff', 'InstituteController@addStaff')->name('add-staff.index');
 
     Route::get('getDistrictsList', 'DropdownController@getDistrictsList');
     Route::get('getDSDivisionsList', 'DropdownController@getDSDivisionsList');

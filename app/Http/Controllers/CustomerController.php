@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Customer;
+use App\Institute;
 use Illuminate\Http\Request;
 use App\Http\Requests\Customers\CreateCustomerRequest;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
+use DB;
 
 class CustomerController extends Controller
 {
@@ -13,17 +17,49 @@ class CustomerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-       //Return view
-       return view('customers.index')->with('customers', Customer::all());
+        $institute = Institute::find($request->id);
+        
+        foreach($institute->staff as $staff){
+            if($staff->user_id == Auth::id()){
+                if($staff->status == 1){
+                    //Return view
+                    return view('customers.index')->with('institute', $institute);
+                }else{
+                    session()->flash('message', 'You do not have permission to view staff of the institute!');
+                    session()->flash('alert-type', 'warning');
+
+                    return redirect(route('institutes.index'));
+                }
+            }
+        }
+        
+        session()->flash('message', 'You do not have permission to view staff of the institute!');
+        session()->flash('alert-type', 'warning');
+
+        return redirect(route('institutes.index'));
+    
+       
     }
 
     function autoComplete(Request $request)
     {
         if ($request->ajax()) {
 
-            $data = Customer::where('nic_no','LIKE',$request->name.'%')->orWhere('first_name', 'LIKE', $request->name.'%')->get();
+            $inst = Institute::find($request->institute_id);
+
+            $data = Institute::find($request->institute_id)->customers()->where(function (Builder $query) use ($request) {
+                return $query->where('nic_no', 'LIKE', $request->name . '%')
+                             ->orWhere('first_name', 'LIKE', $request->name . '%');
+            })->get();
+
+            /* $data = DB::table('institutes')
+            ->join('customers', 'institutes.id', '=', 'customers.institute_id')
+            ->where('institutes.id', '=', $request->institute_id)->where(function($query) use ($request) {
+                $query->orWhere('customers.nic_no', 'LIKE', $request->name . '%')->orWhere('customers.first_name', 'LIKE', $request->name . '%');
+            })
+            ->get(); */
 
             $output = '';
 
@@ -58,10 +94,30 @@ class CustomerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //Return View
-        return view('customers.create');
+        $institute = Institute::find($request->id);
+        
+        foreach($institute->staff as $staff){
+            if($staff->user_id == Auth::id()){
+                if($staff->status == 1){
+                    //Return View
+                    return view('customers.create')->with('customer_inst', $institute);
+                }
+                else{
+                    session()->flash('message', 'You do not have permission to create staff of the institute!');
+                    session()->flash('alert-type', 'warning');
+
+                    return redirect(route('institutes.index'));
+                }
+            }
+        }
+
+        session()->flash('message', 'You do not have permission to create staff of the institute!');
+        session()->flash('alert-type', 'warning');
+
+        return redirect(route('institutes.index'));
+        
     }
 
     /**
@@ -74,6 +130,7 @@ class CustomerController extends Controller
     {
         //Save New Customer Data to DB
         Customer::create([
+            'institute_id' => $request->institute_id,
             'first_name' => $request->firstname,
             'last_name' => $request->lastname,
             'gender' => $request->gender,
@@ -87,9 +144,10 @@ class CustomerController extends Controller
             'gn_division' => $request->gndivision,
         ]);
 
-        session()->flash('success', 'Customer Data has been added Successfully!');
+        session()->flash('message', 'Customer Data has been added Successfully!');
+        session()->flash('alert-type', 'success');
 
-        return redirect(route('customers.index'));
+        return redirect(route('customers.index', ['id' => $request->institute_id]));
     }
 
     /**
@@ -100,8 +158,20 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
-        //Return view
-       return view('customers.index')->with('customer', $customer);
+        foreach(Institute::find($customer->institute->id)->staff as $staff){
+            if($staff->user_id == Auth::id()){
+                if($staff->status == 1){
+                    //Return view
+                    return view('customers.index')->with('customer', $customer)->with('institute', $customer->institute);
+                }else{
+                    session()->flash('message', 'You do not have permission to view the customer details!');
+                    session()->flash('alert-type', 'warning');
+
+                    return redirect(route('institutes.index'));
+                }
+            }
+        }
+        
     }
 
     /**
