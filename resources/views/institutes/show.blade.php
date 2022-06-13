@@ -2,9 +2,9 @@
 
 @section('menu')
 <div class="list-group">
-  <a href="{{route('institutes.index')}}" class="list-group-item list-group-item-action"><i class="bi bi-chevron-left"></i>Back</a>
-  <a href="{{route('customers.index', ['id' => $institute->id])}}" class="list-group-item list-group-item-action {{ Route::is('customers.index') ? 'active' : '' }}"><i class="bi bi-person-video2"></i> Customers</a>
-  <a href="{{route('institutes.show', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-diagram-3"></i> Branches</a>
+  <a href="{{ route('institutes.index') }}" class="list-group-item list-group-item-action"><i class="bi bi-chevron-left"></i>Back</a>
+  <a href="{{ route('customers.index', ['id' => $institute->id]) }}" class="list-group-item list-group-item-action {{ Route::is('customers.index') ? 'active' : '' }}"><i class="bi bi-person-video2"></i> Customers</a>
+  <a href="{{ route('branches.index', ['id' => $institute->id]) }}" class="list-group-item list-group-item-action {{ Route::is('branches.index') ? 'active' : '' }}"><i class="bi bi-diagram-3"></i> Branches</a>
 </div>
 
 <br />

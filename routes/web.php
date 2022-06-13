@@ -26,6 +26,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/home', 'HomeController@index')->name('home');
     Route::resource('institutes', 'InstituteController');
     Route::resource('customers', 'CustomerController');
+    Route::resource('branches', 'BranchController');
+    Route::resource('visits', 'VisitController');
 
     Route::get('trashed-institutes', 'InstituteController@trashed')->name('trashed-institutes.index');
     Route::get('join-institute', 'InstituteController@joinInstitute')->name('join-institutes.index');
@@ -36,4 +38,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('getGNDivisionsList', 'DropdownController@getGNDivisionsList');
 
     Route::get('customerSearch/action', 'CustomerController@autoComplete')->name('customer_search.action');
+    Route::get('getCustomer/{institute}/{customer}', 'CustomerController@getCustomer')->name('customer.get');
+    Route::get('getVisit/{customer}', 'CustomerController@getVisit')->name('visit.get');
 });

@@ -242,30 +242,62 @@ class InstituteController extends Controller
     public function joinInstitute(Request $request)
     {
         if($request->institute_id_button == "join"){
-            if($institute = Institute::firstWhere('code', $request->institute_id)){
-                Staff::create([
-                    'user_id' => Auth::id(),
-                    'institute_id' => $institute->id,
-                    'status' => 2,
-                    'role' => 'user'
-                ]);
+                if($institute = Institute::firstWhere('code', $request->institute_id)){
+                    if(!Staff::where('user_id', Auth::id())->where('institute_id', $request->institute_id)->get()){
+                        Staff::create([
+                            'user_id' => Auth::id(),
+                            'institute_id' => $institute->id,
+                            'status' => 2,
+                            'role' => 'user'
+                        ]);
 
-                session()->flash('message', 'Request to join the institute has been sent!');
-                session()->flash('alert-type', 'success');
+                        session()->flash('message', 'Request to join the institute has been sent!');
+                        session()->flash('alert-type', 'success');
 
-                return redirect(route('institutes.index'));
+                        return redirect(route('institutes.index'));
+                    }else{
+                        session()->flash('message', 'You have already joined the institute!');
+                        session()->flash('alert-type', 'danger');
+        
+                        return redirect(route('institutes.index'));
+                    }
             }else{
+               
                 session()->flash('message', 'Institute is not found!');
                 session()->flash('alert-type', 'danger');
 
                 return redirect(route('institutes.index'));
-            }
+            }   
         }
 
     }
     public function addStaff(Request $request){
 
-        $institute = Institute::find($request->id);
+        if($institute = Institute::find($request->id)){
+            foreach($institute->staff as $staff){
+                if($staff->user_id == Auth::id()){
+                    if($staff->status == 1){
+                        return view('institutes.show')->with('institute', $institute);
+                    }else{
+                        session()->flash('message', 'You do not have permission to view staff requests of the institute!');
+                        session()->flash('alert-type', 'warning');
+
+                        return redirect(route('institutes.index'));
+                    }
+                }
+            }
+            session()->flash('message', 'You do not have permission to view staff requests of the institute!');
+            session()->flash('alert-type', 'warning');
+
+            return redirect(route('institutes.index'));
+
+            
+        }else{
+            session()->flash('message', 'Institute is not available');
+            session()->flash('alert-type', 'danger');
+
+            return redirect(route('institutes.index'));
+        }
 
         if($request->add_staff_button == "accept"){
             $staff = Staff::find($request->id);
@@ -287,7 +319,7 @@ class InstituteController extends Controller
             return redirect(route('institutes.show', Staff::find($request->id)->institute->id));
         }
 
-        return view('institutes.show')->with('institute', $institute);
+        
     }
     
 }

@@ -32,6 +32,8 @@ class Institute extends Model
    public function user(){
     return $this->beongsTo('App\User');
    }
-
+   public function branches(){
+    return $this->hasMany('App\Branch');
+   }
 
 }

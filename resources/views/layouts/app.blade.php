@@ -33,6 +33,7 @@
     <!-- Auto Complete Typehead -->
 
 
+
     <noscript>
         <style type="text/css"> 
             #app {display:none;}
@@ -41,6 +42,12 @@
             <div style="text-align:center;font-weight:bold">javascript has been disabled in your browser.</div>
         </div>
     </noscript>
+
+    <style>
+        body {
+            /*background-image: url( {{ asset('background-g3fd207f8b_1920.jpg') }} );*/
+        }
+    </style>
 
 </head>
 <body>

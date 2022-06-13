@@ -3,7 +3,7 @@
 @section('menu')
 <div class="list-group">
   <a href="{{route('customers.index', ['id' => $customer_inst->id])}}" class="list-group-item list-group-item-action {{ Route::is('customers.index') ? 'active' : '' }}"><i class="bi bi-person-video2"></i> Customers</a>
-  <a href="{{route('institutes.show', $customer_inst->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-diagram-3"></i> Branches</a>
+  <a href="{{ route('branches.index', ['id' => $customer_inst->id]) }}" class="list-group-item list-group-item-action {{ Route::is('branches.index') ? 'active' : '' }}"><i class="bi bi-diagram-3"></i> Branches</a>
 </div>
 
 <br />
@@ -16,8 +16,12 @@
 @endsection
 
 @section('content')
-
-<div class="card card-default">
+<div class="row border-bottom">
+  <div class="col-auto"><h4 >{{ $customer_inst->name }}</h4></div>
+  <div class="col-auto"><span class="badge badge-secondary">{{ $customer_inst->code }}</span></div>
+</div>
+<br />
+<div id="customerForm" class="card card-default">
     <div class="card-header">
         <b>{{ isset($customer) ? 'Edit Customer' : 'Add New Customer'}}</b>
     </div>
@@ -48,7 +52,7 @@
                 <div class="col-5">
                     <div class="form-group">
                         <label for="firstname">First Name</label>
-                        <input type="text" class="form-control @error('firstname') is-invalid @enderror" name="firstname" value="{{ isset($customer) ? $customer->first_name : old('firstname') }}">
+                        <input type="text" class="form-control @error('firstname') is-invalid @enderror" id="firstname" name="firstname" value="{{ isset($customer) ? $customer->first_name : old('firstname') }}">
                         @error('firstname')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -72,9 +76,9 @@
                         <label for="gender">Gender</label>
                         <select class="form-control @error('gender') is-invalid @enderror" name="gender" value="{{ isset($customer) ? $customer->gender : old('gender') }}">
                         <option selected disabled>Select...</option>
-                        <option>Male</option>
-                        <option>Female</option>
-                        <option>Other</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
                         </select>
                         @error('gender')
                             <span class="invalid-feedback" role="alert">
@@ -221,16 +225,78 @@
             
             <p></p>
             <div class="form-group">
-                <a class="btn btn-dark" href="{{route('customers.index')}}">Go back</a>
-                <button class="btn btn-success">{{ isset($customer) ? 'Update Details' : 'Add Customer'}}</button>
+                <a class="btn btn-dark mr-1" href="{{route('customers.index', ['id' => $customer_inst->id])}}"><i class="bi bi-chevron-left"></i>Go back</a>
+                <button id="saveButton" class="btn btn-success mr-1"><i class="bi bi-plus-circle"></i> {{ isset($customer) ? 'Update Details' : 'Save Data'}}</button>
+                <button type="button" id="addVisitButton" href="#" class="btn btn-primary mr-1" data-toggle="modal" data-target="#addVisit" disabled><i class="bi bi-person-plus"></i> Create Visit</button>
             </div>
-
-            
         </form>
     </div>
-
-
 </div>
+
+
+@if ( $errors->get('branch') || $errors->get('purpose'))
+    <script type="text/javascript">
+        $( document ).ready(function() {
+                $('#addVisit').modal('show');
+        });
+    </script>
+@endif
+
+
+<form action="{{ route('visits.store', ['institute_id' => $customer_inst->id]) }}" method="POST" id="addVisitForm">
+  @csrf
+  <div class="modal fade" id="addVisit" tabindex="-1" role="dialog" aria-labelledby="addVisitLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addVisitLabel">Add New Visit to </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="branch">Select Branch</label>
+                <select class="form-control @error('branch') is-invalid @enderror" name="branch" value="{{ old('branch') }}">
+                <option selected disabled>Select...</option>
+                @foreach($customer_inst->branches as $branch)
+                    <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+                @endforeach
+                </select>
+                @error('branch')
+                    <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                @enderror
+            </div>
+            <div class="form-group">
+                <label for="purpose">Purpose of Visit</label>
+                <textarea class="form-control @error('purpose') is-invalid @enderror" name="purpose" rows="3"></textarea>
+                @error('purpose')
+                    <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                @enderror
+            </div>
+            <div class="form-group">
+                <label for="remarks">Remarks</label><small class="d-inline-block form-text text-muted ml-1">(Optional)</small>
+                <textarea class="form-control @error('remarks') is-invalid @enderror" name="remarks" rows="3"></textarea>
+                @error('remarks')
+                    <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                @enderror
+            </div>
+        </div>
+        <div class="modal-footer">
+            <input type="hidden" id="custId" name="custId" value="">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-success">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
 
 @endsection
 
@@ -238,6 +304,12 @@
 <script type="text/javascript">
     jQuery(document).ready(function ()
     {
+        function blink_text() {
+            jQuery('#test').fadeOut(500);
+            jQuery('#test').fadeIn(500);
+        }
+        setInterval(blink_text, 1000);
+
         jQuery('select[name="province"]').on('change',function(){
             var provinceID = jQuery(this).val();
                if(provinceID)
@@ -305,6 +377,158 @@
                {
                   $('select[name="gndivision"]').empty();
                }
+        });
+
+        jQuery('input[name="nic_no"]').on('input',function(){
+            var customer_nic = $(this).val();
+               if(customer_nic)
+               {
+                jQuery.ajax({
+                    url : "{{ url('/getCustomer') }}" +  "/" + "{{ $customer_inst->id }}" + "/" + customer_nic,
+                    type : "GET",
+                    dataType : "json",
+                    success:function(data){    
+                        if(!jQuery.isEmptyObject(data)){
+                            console.log(data);
+                            jQuery('input[name="firstname"]').val(data[0].first_name);
+                            jQuery('input[name="firstname"]').attr('readonly', true);
+                            jQuery('input[name="lastname"]').val(data[0].last_name);
+                            jQuery('input[name="lastname"]').attr('readonly', true);
+                            jQuery('select[name="gender"]').val(data[0].gender).change();
+                            jQuery('select[name="gender"]').attr('disabled', true);
+                            jQuery('input[name="address"]').val(data[0].address);
+                            jQuery('input[name="address"]').attr('readonly', true);
+                            jQuery('input[name="contact_no"]').val(data[0].contact_no);
+                            jQuery('input[name="contact_no"]').attr('readonly', true);
+                            jQuery('input[name="email"]').val(data[0].email);
+                            jQuery('input[name="email"]').attr('readonly', true);
+                            jQuery('select[name="province"]').val(data[0].province).change();
+                            jQuery('select[name="province"]').attr('disabled', true);
+                            jQuery('#addVisitButton').attr('disabled', false);
+                            jQuery('#saveButton').attr('disabled', true);
+                            jQuery("#addVisitLabel").append(data[0].first_name);
+                            jQuery("#custId").val(data[0].id);
+
+                            jQuery.ajax({
+                            url : "{{url('/getDistrictsList')}}?province_id=" + data[0].province,
+                            type : "GET",
+                            dataType : "json",
+                            success:function(data2){    
+                                jQuery('select[name="district"]').empty();
+                                jQuery.each(data2, function(key,value){
+                                    if(key == data[0].district){
+                                        $('select[name="district"]').append('<option selected disabled value="'+ key +'">'+ value +'</option>');
+                                        jQuery('select[name="district"]').attr('disabled', true);
+                                    }
+                                });
+                            }
+                            });
+
+                            jQuery.ajax({
+                            url : "{{url('/getDSDivisionsList')}}?district_id=" + data[0].district,
+                            type : "GET",
+                            dataType : "json",
+                            success:function(data2){    
+                                jQuery('select[name="dsdivision"]').empty();
+                                jQuery.each(data2, function(key,value){
+                                    if(key == data[0].ds_division){
+                                        $('select[name="dsdivision"]').append('<option selected disabled value="'+ key +'">'+ value +'</option>');
+                                        jQuery('select[name="dsdivision"]').attr('disabled', true);
+                                    }
+                                
+                                });
+                            }
+                            });
+
+                            jQuery.ajax({
+                            url : "{{url('/getGNDivisionsList')}}?dsdivision_id=" + data[0].ds_division,
+                            type : "GET",
+                            dataType : "json",
+                            success:function(data2){    
+                                jQuery('select[name="gndivision"]').empty();
+                                jQuery.each(data2, function(key,value){
+                                    if(key == data[0].gn_division){
+                                        $('select[name="gndivision"]').append('<option value="'+ key +'">'+ value +'</option>');
+                                        jQuery('select[name="gndivision"]').attr('disabled', true);
+                                    }
+                                });
+                            }
+                            });
+
+                            jQuery.ajax({
+                            url : "{{url('/getVisit')}}" + "/" + data[0].id,
+                            type : "GET",
+                            dataType : "json",
+                            success:function(data2){    
+                                if(!jQuery.isEmptyObject(data2)){
+                                    console.log(data2);
+                                    jQuery('#customerForm').after('<div id="visitCard" class="card border-primary mt-3"><div  id="visitHeader" class="card-header bg-primary"><b>Visit of </b></div><div class="card-body"><div class="row"><div class="col-4"><p><b>Visited Branch:</b></p><p><b>Visit Created:</b></p><p><b>Status:</b></p></div><div class="col-8"><p name="visited_branch"></p><p name="visited_date"></p><p name="visit_status"></p></div></div></div></div>');
+                                    jQuery("#visitHeader").append('<b>' + data[0].first_name + ' </b><span id="test" class="badge badge-success">ACTIVE</span>');
+                                    jQuery('p[name="visited_branch"]').text(data2['branch'].name);
+                                    jQuery('p[name="visited_date"]').text(data2['visit_time']);
+                                    jQuery('p[name="visit_status"]').text(data2['visit'].status);
+                                    jQuery('#addVisitButton').attr('disabled', true);
+                                }
+                                
+                            }
+                            });
+                            
+
+                        }else{
+                            jQuery('input[name="firstname"]').attr('readonly', false);
+                            jQuery('input[name="firstname"]').val('');
+                            jQuery('input[name="lastname"]').attr('readonly', false);
+                            jQuery('input[name="lastname"]').val('');
+                            jQuery('select[name="gender"]').attr('disabled', false);
+                            jQuery('select[name="gender"]').prop('selectedIndex',0);
+                            jQuery('input[name="address"]').attr('readonly', false);
+                            jQuery('input[name="address"]').val('');
+                            jQuery('input[name="contact_no"]').attr('readonly', false);
+                            jQuery('input[name="contact_no"]').val('');
+                            jQuery('input[name="email"]').attr('readonly', false);
+                            jQuery('input[name="email"]').val('');
+                            jQuery('select[name="province"]').attr('disabled', false);
+                            jQuery('select[name="province"]').prop('selectedIndex',0);
+                            jQuery('select[name="district"]').attr('disabled', false);
+                            jQuery('select[name="district"]').empty();
+                            jQuery('select[name="dsdivision"]').attr('disabled', false);
+                            jQuery('select[name="dsdivision"]').empty();
+                            jQuery('select[name="gndivision"]').attr('disabled', false);
+                            jQuery('select[name="gndivision"]').empty();
+                            jQuery('#addVisitButton').attr('disabled', true);
+                            jQuery('#saveButton').attr('disabled', false);
+                            jQuery("#custId").val('');
+                            jQuery('#visitCard').remove();
+                        }
+                    }
+                });
+            }else{
+                jQuery('input[name="firstname"]').attr('readonly', false);
+                jQuery('input[name="firstname"]').val('');
+                jQuery('input[name="lastname"]').attr('readonly', false);
+                jQuery('input[name="lastname"]').val('');
+                jQuery('select[name="gender"]').attr('disabled', false);
+                jQuery('select[name="gender"]').prop('selectedIndex',0);
+                jQuery('input[name="address"]').attr('readonly', false);
+                jQuery('input[name="address"]').val('');
+                jQuery('input[name="contact_no"]').attr('readonly', false);
+                jQuery('input[name="contact_no"]').val('');
+                jQuery('input[name="email"]').attr('readonly', false);
+                jQuery('input[name="email"]').val('');
+                jQuery('select[name="province"]').attr('disabled', false);
+                jQuery('select[name="province"]').prop('selectedIndex',0);
+                jQuery('select[name="district"]').attr('disabled', false);
+                jQuery('select[name="district"]').empty();
+                jQuery('select[name="dsdivision"]').attr('disabled', false);
+                jQuery('select[name="dsdivision"]').empty();
+                jQuery('select[name="gndivision"]').attr('disabled', false);
+                jQuery('select[name="gndivision"]').empty();
+                jQuery('#addVisitButton').attr('disabled', true);
+                jQuery('#saveButton').attr('disabled', false);
+                jQuery("#custId").val('');
+                jQuery('#visitCard').remove();
+            }
+            
         });
     });
 </script>

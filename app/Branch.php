@@ -5,16 +5,16 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Customer extends Model
+class Branch extends Model
 {
     use SoftDeletes;
 
     protected $fillable = [
-        'institute_id', 'first_name', 'last_name', 'gender', 'nic_no', 'address', 'contact_no', 'province' , 'district', 'ds_division', 'gn_division'
+        'name', 'institute_id', 'branch_head'
     ];
 
-    ///Table name
-   protected $table = 'customers';
+     ///Table name
+   protected $table = 'branches';
 
    //Primarykey
    public $primaryKey = 'id';
@@ -27,7 +27,5 @@ class Customer extends Model
    public function institute(){
     return $this->belongsTo('App\Institute');
    }
-   public function visits(){
-    return $this->hasMany('App\Visit');
-   }
+   
 }
