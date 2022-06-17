@@ -2,7 +2,7 @@
 
 @section('menu')
 <div class="list-group">
-  <a href="{{route('customers.index', ['id' => $customer_inst->id])}}" class="list-group-item list-group-item-action {{ Route::is('customers.index') ? 'active' : '' }}"><i class="bi bi-person-video2"></i> Customers</a>
+  <a href="{{route('customers.index', ['id' => $customer_inst->id])}}" class="list-group-item list-group-item-action {{ Route::is('customers.create') ? 'active' : '' }}"><i class="bi bi-person-video2"></i> Customers</a>
   <a href="{{ route('branches.index', ['id' => $customer_inst->id]) }}" class="list-group-item list-group-item-action {{ Route::is('branches.index') ? 'active' : '' }}"><i class="bi bi-diagram-3"></i> Branches</a>
 </div>
 
@@ -49,6 +49,19 @@
             @endif
 
             <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        <label for="nic_no">NIC No.</label>
+                        <input type="text" class="form-control @error('nic_no') is-invalid @enderror" name="nic_no" value="{{ isset($customer) ? $customer->nic_no : old('nic_no') }}">
+                        @error('nic_no')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-5">
                     <div class="form-group">
                         <label for="firstname">First Name</label>
@@ -90,18 +103,7 @@
             </div>
 
             <div class="row">
-                <div class="col-4">
-                    <div class="form-group">
-                        <label for="nic_no">NIC No.</label>
-                        <input type="text" class="form-control @error('nic_no') is-invalid @enderror" name="nic_no" value="{{ isset($customer) ? $customer->nic_no : old('nic_no') }}">
-                        @error('nic_no')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                    </div>
-                </div>
-                <div class="col-8">
+                <div class="col-12">
                     <div class="form-group">
                         <label for="address">Address</label>
                         <input type="text" class="form-control @error('address') is-invalid @enderror" name="address" value="{{ isset($customer) ? $customer->address : old('address') }}">

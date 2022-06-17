@@ -116,7 +116,7 @@ class CustomerController extends Controller
                 if($visit->status == "SERVING"){
                     $branch = Branch::find($visit->branch_id);
                     
-                    return json_encode(array('visit' => $visit, 'branch' => $branch, 'visit_time' => Carbon::parse($visit->created_at)->diffForHumans()));
+                    return json_encode(array('visit' => $visit, 'branch' => $branch, 'visit_time' => Carbon::parse($visit->created_at)->toFormattedDateString()));
                 }
             }
         }
@@ -180,7 +180,7 @@ class CustomerController extends Controller
         session()->flash('message', 'Customer Data has been added Successfully!');
         session()->flash('alert-type', 'success');
 
-        return view('visits.create')->with('customer', Customer::find($customer->id))->with('institute', Institute::find($request->institute_id));
+        return view('customers.create')->with('customer_inst', Institute::find($request->institute_id));
     }
 
     /**
@@ -194,8 +194,9 @@ class CustomerController extends Controller
         foreach(Institute::find($customer->institute->id)->staff as $staff){
             if($staff->user_id == Auth::id()){
                 if($staff->status == 1){
+                    
                     //Return view
-                    return view('customers.index')->with('customer', $customer)->with('institute', $customer->institute);
+                    return view('customers.index')->with('customer', $customer)->with('institute', $customer->institute)->with('visits', Customer::find($customer->id)->visits()->orderBy('created_at', 'DESC')->get());
                 }else{
                     session()->flash('message', 'You do not have permission to view the customer details!');
                     session()->flash('alert-type', 'warning');
@@ -204,7 +205,11 @@ class CustomerController extends Controller
                 }
             }
         }
-        
+        session()->flash('message', 'You do not have permission to view the customer details!');
+        session()->flash('alert-type', 'warning');
+
+        return redirect(route('institutes.index'));
+
     }
 
     /**
