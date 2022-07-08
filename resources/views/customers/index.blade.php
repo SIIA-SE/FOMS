@@ -20,6 +20,7 @@
 <div class="row border-bottom">
   <div class="col-auto"><h4 >{{ $institute->name }}</h4></div>
   <div class="col-auto"><span class="badge badge-secondary">{{ $institute->code }}</span></div>
+  <div class="col"><a href="{{route('institutes.index')}}" class="float-right btn btn-sm btn-danger"><i class="bi bi-box-arrow-left"></i> Exit</a></div>
 </div>
 <br />
 <div class="d-flex justify-content-end mb-3">
@@ -171,10 +172,10 @@
                         </div>
                         <div id="collapse{{ $visit->id }}" class="collapse" aria-labelledby="heading{{ $visit->id }}" data-parent="#accordion">
                           <div class="card-body">
-                            <p class="d-inline-block mr-2 ml-0"><i class="bi bi-diagram-2 ml-0"></i> {{ \App\Branch::find($visit->branch_id)->name }} </p>
-                            <p class="d-inline-block mr-2 ml-0"><i class="bi bi-calendar-week"></i> {{ \Carbon\Carbon::parse($visit->created_at)->toFormattedDateString() }} </p>
-                            <p class="d-inline-block mr-2 ml-0"><i class="bi bi-stopwatch"></i> @if($visit->status == "SERVING")SERVING... @elseif($visit->start_time == null) N/A @else {{ \Carbon\Carbon::parse($visit->start_time)->diffForHumans($visit->end_time, true) }} @endif</p>
-                            <p class="d-inline-block mr-2 ml-0"><i class="bi bi-ticket-perforated"></i> {{ $visit->token_no }} </p>
+                            <p class="border border-dark rounded d-inline-block mr-2 ml-0 p-1"><i class="bi bi-diagram-2 ml-0"></i> {{ \App\Branch::find($visit->branch_id)->name }} </p>
+                            <p class="border border-dark rounded d-inline-block mr-2 ml-0 p-1"><i class="bi bi-calendar-week"></i> {{ \Carbon\Carbon::parse($visit->created_at)->toFormattedDateString() }} </p>
+                            <p class="border border-dark rounded d-inline-block mr-2 ml-0 p-1"><i class="bi bi-stopwatch"></i> @if($visit->status == "SERVING")SERVING... @elseif($visit->start_time == null) N/A @else {{ \Carbon\Carbon::parse($visit->start_time)->diffForHumans($visit->end_time, true) }} @endif</p>
+                            <p class="border border-dark rounded d-inline-block mr-2 ml-0 p-1"><i class="bi bi-ticket-perforated"></i> {{ $visit->token_no }} </p>
                             <p><b>Purpose:</b> {{ $visit->purpose }}</p>
                             <p><b>Remarks:</b> {{ $visit->remarks }}</p>
                           </div>
@@ -249,7 +250,7 @@
       success:function(data2){    
         if(!jQuery.isEmptyObject(data2)){
           console.log(data2);
-          jQuery('#customerForm').after('<div id="visitCard" class="card border-primary mt-3"><div  id="visitHeader" class="card-header bg-primary"><b>Visit of </b></div><div class="card-body"><p class="d-inline-block mr-2 ml-0" name="visited_branch"><i class="bi bi-diagram-2 ml-0"></i> </p><p class="d-inline-block mr-2 ml-0" name="visited_date"><i class="bi bi-calendar-week"></i> </p><p class="d-inline-block mr-2 ml-0" name="visit_status"><i class="bi bi-stopwatch"></i> </p><p class="d-inline-block mr-2 ml-0" name="visit_token"><i class="bi bi-ticket-perforated"></i> </p><p name="visit_purpose"><b>Purpose:</b> </p><p name="visit_remarks"><b>Remarks:</b> </p></div>');
+          jQuery('#customerForm').after('<div id="visitCard" class="card border-primary mt-3"><div  id="visitHeader" class="card-header bg-primary"><b>Visit of </b></div><div class="card-body"><p class="border border-dark rounded d-inline-block mr-2 ml-0 p-1" name="visited_branch"><i class="bi bi-diagram-2 ml-0"></i> </p><p class="border border-dark rounded d-inline-block mr-2 ml-0 p-1" name="visited_date"><i class="bi bi-calendar-week"></i> </p><p class="border border-dark rounded d-inline-block mr-2 ml-0 p-1" name="visit_status"><i class="bi bi-stopwatch"></i> </p><p class="border border-dark rounded d-inline-block mr-2 ml-0 p-1" name="visit_token"><i class="bi bi-ticket-perforated"></i> </p><p name="visit_purpose"><b>Purpose:</b> </p><p name="visit_remarks"><b>Remarks:</b> </p></div>');
           jQuery("#visitHeader").append('<b>' + "@if(isset($customer)) {{ $customer->first_name }} @endif" + ' </b><span id="test" class="badge badge-success">ACTIVE</span>');
           jQuery('p[name="visited_branch"]').append(data2['branch'].name);
           jQuery('p[name="visited_date"]').append(data2['visit_time']);

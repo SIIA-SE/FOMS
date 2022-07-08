@@ -66,7 +66,7 @@ class VisitController extends Controller
         session()->flash('message', 'Customer Visit has been created Successfully!');
         session()->flash('alert-type', 'success');
 
-        return view('customers.index')->with('customer', Customer::find($request->custId))->with('institute', Institute::find($request->institute_id));
+        return redirect(route('customers.show', $request->custId));
     }
 
     /**

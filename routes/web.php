@@ -38,6 +38,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('getGNDivisionsList', 'DropdownController@getGNDivisionsList');
 
     Route::get('customerSearch/action', 'CustomerController@autoComplete')->name('customer_search.action');
+    Route::get('customerSearch/select', 'CustomerController@selectCustomer')->name('customer_search.select');
     Route::get('getCustomer/{institute}/{customer}', 'CustomerController@getCustomer')->name('customer.get');
     Route::get('getVisit/{customer}', 'CustomerController@getVisit')->name('visit.get');
 });

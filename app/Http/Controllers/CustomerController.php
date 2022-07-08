@@ -92,6 +92,52 @@ class CustomerController extends Controller
 
     }
 
+    function selectCustomer(Request $request)
+    {
+        if ($request->ajax()) {
+
+            $inst = Institute::find($request->institute_id);
+
+            $data = Institute::find($request->institute_id)->customers()->where(function (Builder $query) use ($request) {
+                return $query->where('nic_no', 'LIKE', $request->name . '%')
+                             ->orWhere('first_name', 'LIKE', $request->name . '%');
+            })->get();
+
+            /* $data = DB::table('institutes')
+            ->join('customers', 'institutes.id', '=', 'customers.institute_id')
+            ->where('institutes.id', '=', $request->institute_id)->where(function($query) use ($request) {
+                $query->orWhere('customers.nic_no', 'LIKE', $request->name . '%')->orWhere('customers.first_name', 'LIKE', $request->name . '%');
+            })
+            ->get(); */
+
+            $output = '';
+
+            if (count($data)>0) {
+
+                $output = '<ul class="list-group" style="display: block; position: relative; z-index: 1">';
+
+                foreach ($data as $row) {
+
+                    $output .= '<li class="list-group-item list-group-item-action" name="result"><a id="' . $row->id . '" name="result">' . $row->first_name . ' (' . $row->nic_no . ')</a></li>';
+
+                }
+
+                $output .= '</ul>';
+
+            }else {
+
+                $output .= '<li class="list-group-item">'.'No Data Found'.'</li>';
+
+            }
+
+            return $output;
+
+        }
+
+        return view('autosearch');  
+
+    }
+
     function getCustomer(Request $request)
     {
         

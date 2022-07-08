@@ -17,9 +17,10 @@
 @endsection
 
 @section('content')
-<div class="row">
+<div class="row border-bottom">
   <div class="col-auto"><h4 >{{$institute->name}}</h4></div>
   <div class="col-auto"><span class="badge badge-secondary">{{$institute->code}}</span></div>
+  <div class="col"><a href="{{route('institutes.index')}}" class="float-right btn btn-sm btn-danger"><i class="bi bi-box-arrow-left"></i> Exit</a></div>
 </div>
 <br />
 @if(Route::is('add-staff.index'))

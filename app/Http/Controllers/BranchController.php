@@ -76,9 +76,10 @@ class BranchController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Branch $branch)
     {
-        //
+        //Return show page
+        return view('branches.show')->with('institute', $branch->institute)->with('branch', $branch);
     }
 
     /**

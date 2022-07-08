@@ -2,6 +2,7 @@
 
 @section('menu')
 <div class="list-group">
+<a href="{{route('customers.index', ['id' => $customer_inst->id])}}" class="list-group-item list-group-item-action"><i class="bi bi-chevron-left"></i>Back</a>
   <a href="{{route('customers.index', ['id' => $customer_inst->id])}}" class="list-group-item list-group-item-action {{ Route::is('customers.create') ? 'active' : '' }}"><i class="bi bi-person-video2"></i> Customers</a>
   <a href="{{ route('branches.index', ['id' => $customer_inst->id]) }}" class="list-group-item list-group-item-action {{ Route::is('branches.index') ? 'active' : '' }}"><i class="bi bi-diagram-3"></i> Branches</a>
 </div>
@@ -19,6 +20,7 @@
 <div class="row border-bottom">
   <div class="col-auto"><h4 >{{ $customer_inst->name }}</h4></div>
   <div class="col-auto"><span class="badge badge-secondary">{{ $customer_inst->code }}</span></div>
+  <div class="col"><a href="{{route('institutes.index')}}" class="float-right btn btn-sm btn-danger"><i class="bi bi-box-arrow-left"></i> Exit</a></div>
 </div>
 <br />
 <div id="customerForm" class="card card-default">
