@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Branch;
 use App\Institute;
+use App\Customer;
 use App\Http\Requests\Branches\CreateBranchRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -76,10 +77,56 @@ class BranchController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Branch $branch)
+    public function show(Request $request)
     {
-        //Return show page
-        return view('branches.show')->with('institute', $branch->institute)->with('branch', $branch);
+        $branch = Branch::find($request->branch);
+        $institute = Institute::find($branch->institute->id);
+
+
+        foreach($institute->staff as $staff){
+            if($staff->user_id == Auth::user()->id){
+                if($staff->status == 1){
+                    //Return show page
+                    $queue = Institute::find($branch->institute_id)->visits()->where('branch_id', $branch->id)->where('status', 'IN QUEUE')->orderBy('created_at', 'desc')->get();
+                    return view('branches.show')->with('institute', $branch->institute)->with('branch', $branch)->with('queue', $queue);
+                }else {
+                    session()->flash('message', 'You do not have permission to view branch of the institute!');
+                    session()->flash('alert-type', 'warning');
+
+                    return redirect(route('institutes.index'));
+                }
+            }
+        }
+        session()->flash('message', 'You do not have permission to view branch of the institute!');
+        session()->flash('alert-type', 'warning');
+
+        return redirect(route('institutes.index'));
+        
+    }
+
+    function getQueue(Request $request)
+    {
+        
+        if ($request->ajax()) {
+            
+            $branch = Branch::find($request->branch);
+            $institute = Institute::find($branch->institute->id);
+            
+            $visits = Institute::find($branch->institute_id)->visits()->where('branch_id', $branch->id)->where('status', 'IN QUEUE')->orderBy('created_at', 'desc')->get();
+
+            
+            return json_encode($visits);
+            
+        }
+    }
+
+    function getCustomerById(Request $request)
+    {
+        if ($request->ajax()) {
+            $data = Customer::find($request->id);
+
+            return json_encode($data);
+        }
     }
 
     /**

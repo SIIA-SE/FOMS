@@ -35,5 +35,8 @@ class Institute extends Model
    public function branches(){
     return $this->hasMany('App\Branch');
    }
+   public function visits(){
+    return $this->hasMany('App\Visit');
+   }
 
 }

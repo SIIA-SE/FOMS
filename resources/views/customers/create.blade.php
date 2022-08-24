@@ -393,7 +393,7 @@
                     dataType : "json",
                     success:function(data){    
                         if(!jQuery.isEmptyObject(data)){
-                            console.log(data);
+                            //console.log(data);
                             jQuery('input[name="firstname"]').val(data[0].first_name);
                             jQuery('input[name="firstname"]').attr('readonly', true);
                             jQuery('input[name="lastname"]').val(data[0].last_name);

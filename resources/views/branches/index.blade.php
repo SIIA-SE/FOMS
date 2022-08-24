@@ -11,6 +11,7 @@
 
 <div class="list-group">
   <a href="{{route('add-staff.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-plus-fill"></i> Staff Requests <span class="badge badge-danger">4</span></a>
+  <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-stickies-fill"></i> Serving List</a>
 </div>
 
 <br />

@@ -149,48 +149,48 @@
 </form>
 
 <div class="modal fade" id="previousVisits" tabindex="-1" role="dialog" aria-labelledby="previousVisitsLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="previousVisitsLabel">Previous visits of @if(isset($customer)) {{ $customer->first_name }}  @endif</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          @if(isset($visits))
-            @if(count($visits) > 0)
-              <div class="accordion" id="accordion">
-                @foreach($visits as $visit)
-                      <div class="card">
-                        <div class="card-header" id="heading{{ $visit->id }}">
-                          <h5 class="mb-0">
-                            <button class="btn" data-toggle="collapse" data-target="#collapse{{ $visit->id }}" aria-expanded="true" aria-controls="collapse{{ $visit->id }}">
-                              Visited {{ \Carbon\Carbon::parse($visit->created_at)->diffForHumans() }} @if($visit->status == "SERVING")<span id="test" class="badge badge-success">ACTIVE</span>@endif
-                            </button>
-                          </h5>
-                        </div>
-                        <div id="collapse{{ $visit->id }}" class="collapse" aria-labelledby="heading{{ $visit->id }}" data-parent="#accordion">
-                          <div class="card-body">
-                            <p class="border border-dark rounded d-inline-block mr-2 ml-0 p-1"><i class="bi bi-diagram-2 ml-0"></i> {{ \App\Branch::find($visit->branch_id)->name }} </p>
-                            <p class="border border-dark rounded d-inline-block mr-2 ml-0 p-1"><i class="bi bi-calendar-week"></i> {{ \Carbon\Carbon::parse($visit->created_at)->toFormattedDateString() }} </p>
-                            <p class="border border-dark rounded d-inline-block mr-2 ml-0 p-1"><i class="bi bi-stopwatch"></i> @if($visit->status == "SERVING")SERVING... @elseif($visit->start_time == null) N/A @else {{ \Carbon\Carbon::parse($visit->start_time)->diffForHumans($visit->end_time, true) }} @endif</p>
-                            <p class="border border-dark rounded d-inline-block mr-2 ml-0 p-1"><i class="bi bi-ticket-perforated"></i> {{ $visit->token_no }} </p>
-                            <p><b>Purpose:</b> {{ $visit->purpose }}</p>
-                            <p><b>Remarks:</b> {{ $visit->remarks }}</p>
-                          </div>
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="previousVisitsLabel">Previous visits of @if(isset($customer)) {{ $customer->first_name }}  @endif</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        @if(isset($visits))
+          @if(count($visits) > 0)
+            <div class="accordion" id="accordion">
+              @foreach($visits as $visit)
+                    <div class="card">
+                      <div class="card-header" id="heading{{ $visit->id }}">
+                        <h5 class="mb-0">
+                          <button class="btn" data-toggle="collapse" data-target="#collapse{{ $visit->id }}" aria-expanded="true" aria-controls="collapse{{ $visit->id }}">
+                            Visited {{ \Carbon\Carbon::parse($visit->created_at)->diffForHumans() }} @if($visit->status == "SERVING")<span id="test" class="badge badge-success">ACTIVE</span>@endif
+                          </button>
+                        </h5>
+                      </div>
+                      <div id="collapse{{ $visit->id }}" class="collapse" aria-labelledby="heading{{ $visit->id }}" data-parent="#accordion">
+                        <div class="card-body">
+                          <p class="border border-dark rounded d-inline-block mr-2 ml-0 p-1"><i class="bi bi-diagram-2 ml-0"></i> {{ \App\Branch::find($visit->branch_id)->name }} </p>
+                          <p class="border border-dark rounded d-inline-block mr-2 ml-0 p-1"><i class="bi bi-calendar-week"></i> {{ \Carbon\Carbon::parse($visit->created_at)->toFormattedDateString() }} </p>
+                          <p class="border border-dark rounded d-inline-block mr-2 ml-0 p-1"><i class="bi bi-stopwatch"></i> @if($visit->status == "SERVING")SERVING... @elseif($visit->start_time == null) N/A @else {{ \Carbon\Carbon::parse($visit->start_time)->diffForHumans($visit->end_time, true) }} @endif</p>
+                          <p class="border border-dark rounded d-inline-block mr-2 ml-0 p-1"><i class="bi bi-ticket-perforated"></i> {{ $visit->token_no }} </p>
+                          <p><b>Purpose:</b> {{ $visit->purpose }}</p>
+                          <p><b>Remarks:</b> {{ $visit->remarks }}</p>
                         </div>
                       </div>
-                @endforeach
-              
-            @else 
-              <p>{{ $customer->first_name }} doesn't have any previous visits to {{ $institute->name }}</p>
-            @endif
+                    </div>
+              @endforeach
+            
+          @else 
+            <p>{{ $customer->first_name }} doesn't have any previous visits to {{ $institute->name }}</p>
           @endif
-        </div>
+        @endif
       </div>
     </div>
   </div>
+</div>
     
 @endsection
 

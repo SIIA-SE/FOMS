@@ -28,5 +28,8 @@ class Visit extends Model
    public function customer(){
     return $this->belongsTo('App\Customer');
    }
+   public function institute(){
+    return $this->belongsTo('App\Institute');
+   }
    
 }

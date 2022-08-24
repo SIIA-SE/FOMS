@@ -103,6 +103,43 @@ class VisitController extends Controller
         //
     }
 
+    public function changeVisit(Request $request)
+    {
+        //dd($request->visitId);
+        //Change Visit Status   
+        if($visit = Visit::find($request->visitId)){
+            
+            if($request->visit_status == "serve"){
+                $visit->status = "SERVING";
+                $visit->save();
+
+                session()->flash('message', 'Customer Serving has been started Successfully!');
+                session()->flash('alert-type', 'success');
+
+                return redirect(route('branches.show', $visit->branch_id));
+            }
+            
+
+            if($request->visit_status == "return"){
+                $visit->status = "RETURNED";
+                $visit->save();
+
+                session()->flash('message', 'Customer has been returned Successfully!');
+                session()->flash('alert-type', 'success');
+
+                return redirect(route('branches.show', $visit->branch_id));
+
+            }
+            
+
+        }else{
+            session()->flash('message', 'Requested Visit record not available');
+            session()->flash('alert-type', 'warning');
+
+            return redirect(route('home'));
+
+        }
+    }
     /**
      * Remove the specified resource from storage.
      *
