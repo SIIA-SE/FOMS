@@ -44,4 +44,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('getQueue/{branch}', 'BranchController@getQueue')->name('queue.get');
     Route::get('getCustomerById/{id}', 'BranchController@getCustomerById')->name('customerbyid.get');
     Route::get('changeVisit/', 'VisitController@changeVisit')->name('visit.change');
+    Route::get('getServeList/{branch}', 'BranchController@getServeList')->name('serve.get');
 });

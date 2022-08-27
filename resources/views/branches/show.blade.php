@@ -12,6 +12,10 @@
 <div class="list-group">
   <a href="{{route('add-staff.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-plus-fill"></i> Staff Requests <span class="badge badge-danger">4</span></a>
 </div>
+<br />
+<div class="list-group">
+  <a id="serve_list" href="#" class="list-group-item list-group-item-action"><i class="bi bi-stickies-fill"></i> Serving List</a>
+</div>
 
 <br />
 @endsection
@@ -30,14 +34,16 @@
 <br />
 
 <div class="row">
-  <div class="col-auto"><h4> Customer Queue</h4></div>
+  <div class="col-auto"><h4 id="title"> Customer Queue</h4></div>
   <div class="col"><p id="refresh" class="float-right btn btn-sm btn-dark"><i class="bi bi-arrow-repeat"></i> Refresh</p></div>
 </div>
 
 <div id="queue" class="rounded p-0">
+  @php $count = 0; @endphp
   @foreach($institute->visits()->orderBy('created_at', 'desc')->get() as $visit)
     @if($visit->branch_id == $branch->id)
       @if($visit->status == "IN QUEUE") 
+      @php $count++; @endphp
         <div class="queueCard card border-dark mt-3">
           <div class="card-body">
             <div class="row">
@@ -70,6 +76,9 @@
       @endif
     @endif
   @endforeach
+  @if($count == 0)
+    <div class="alert alert-primary" role="alert"><i class="bi bi-people-fill"></i> Queue is empty for {{ $branch->name }}!</div>
+  @endif
 </div>
 
 
@@ -117,7 +126,7 @@
     </div>
   </div>
 </div>
-<form action="{{ route('visit.change') }}" method="GET" id="addBranchForm">
+<form action="{{ route('visit.change') }}" method="GET" id="callupCustomerForm">
   <div class="modal fade" id="callupToken" tabindex="-1" role="dialog" aria-labelledby="callupTokenLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
@@ -139,6 +148,38 @@
     </div>
   </div>
 </form>
+
+<form action="{{ route('visit.change') }}" method="GET" id="completeServiceForm">
+  <div class="modal fade" id="completeService" tabindex="-1" role="dialog" aria-labelledby="completeServiceLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="completeServiceLabel">Complete Visit of </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="remarks">Remarks</label><small class="d-inline-block form-text text-muted ml-1">(Optional)</small>
+            <textarea class="form-control @error('remarks') is-invalid @enderror" name="remarks" rows="3"></textarea>
+            @error('remarks')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+          </div>
+        </div>
+        <div class="modal-footer">
+          <input type="hidden" id="vis_ID" name="vis_ID" value="">
+          <button type="submit" name="visit_status" value="complete" class="btn btn-primary"><i class="bi bi-person-check-fill"></i> Complete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+
 @endsection
 
 @section('scripts')
@@ -184,6 +225,14 @@
       
     });
 
+    $("#completeService").on("show.bs.modal", function (e) {
+      var visit_id = $(e.relatedTarget).data('target-id');
+      console.log(visit_id);
+      jQuery("#vis_ID").empty();
+      jQuery("#vis_ID").val(visit_id);
+      
+    });
+
     jQuery('#refresh').on('click',function(){
       jQuery('#queue').empty();
       jQuery.ajax({
@@ -201,7 +250,7 @@
                     if(!jQuery.isEmptyObject(data2)){
                       //first_name = data2.first_name;
                       //contact_no = data2.contact_no;
-                      jQuery('#queue').append('<div class="queueCard card border-dark mt-3"><div class="card-body"><div class="row"><div class="col"><p name="first_name"><i class="bi bi-person-fill"></i> ' + data2.first_name + '</p></div><div class="col-3"><p name="contact_no"><i class="bi bi-telephone-fill"></i> ' + data2.contact_no + '</p></div><div class="col-3"><p name="visited_date"><i class="bi bi-calendar-week-fill"></i> ' + moment(data[key].created_at).fromNow()  + '</p></div><div class="col"><p name="visit_token"><i class="bi bi-ticket-perforated-fill"></i> ' + data[key].token_no + '</p></div><div class="col-2"><p name="visit_satus"><i class="bi bi-gear-fill"></i> ' + data[key].status + '</p></div></div><p name="visit_purpose"><b>Purpose:</b> ' + data[key].purpose + '</p><p name="visit_remarks"><b>Remarks:</b> ' + data[key].remarks + '</p><div class="queueControlls float-right"><button id="customerInfoButton" class="btn btn-sm btn-primary mr-1" data-toggle="modal" data-target="#customerInfo" data-target-id="' + data2.nic_no + '"><i class="bi bi-person-video2"></i> Customer Info</button><button id="callupTokenButton" class="btn btn-sm btn-success mr-1" data-toggle="modal" data-target="#callupToken" data-target-id="' + data[key].token_no + '" data-visit-id="' + data[key].id + '"><i class="bi bi-display-fill"></i> Callup Customer</button></div></div></div>');
+                      jQuery('#queue').append('<div class="queueCard card border-dark mt-3"><div class="card-body"><div class="row"><div class="col"><p name="first_name"><i class="bi bi-person-fill"></i> ' + data2.first_name + '</p></div><div class="col-3"><p name="contact_no"><i class="bi bi-telephone-fill"></i> ' + data2.contact_no + '</p></div><div class="col-3"><p name="visited_date"><i class="bi bi-calendar-week-fill"></i> ' + moment(data[key].created_at).fromNow()  + '</p></div><div class="col"><p name="visit_token"><i class="bi bi-ticket-perforated-fill"></i> ' + data[key].token_no + '</p></div><div class="col-2"><p name="visit_satus"><i class="bi bi-gear-fill"></i> ' + data[key].status + '</p></div></div><p name="visit_purpose"><b>Purpose:</b> ' + data[key].purpose + '</p><p name="visit_remarks"><b>Remarks:</b> ' + data[key].remarks + '</p><div class="queueControlls float-right"><button id="customerInfoButton" class="btn btn-sm btn-primary mr-1" data-toggle="modal" data-target="#customerInfo" data-target-id="' + data2.nic_no + '"><i class="bi bi-person-video2"></i> Customer Info</button><button id="callupTokenButton" class="btn btn-sm btn-success mr-1" data-toggle="modal" data-target="#callupToken" data-target-id="' + data[key].token_no + '" data-target-id="' + data[key].id + '"><i class="bi bi-display-fill"></i> Callup Customer</button></div></div></div>');
                     }
                   }
               });
@@ -212,6 +261,58 @@
             console.log(data);
             //jQuery('#queue').empty();
             //jQuery('#queue').append("test");
+            
+          }
+          else{
+            
+            jQuery('#queue').append('<div class="alert alert-primary" role="alert"><i class="bi bi-people-fill"></i> Queue is empty for {{ $branch->name }}!</div>');
+            
+          }
+        }
+      });
+    });
+
+    jQuery('#serve_list').on('click',function(){
+      jQuery('#queue').empty();
+      jQuery('#title').text('Serving List');
+      jQuery('#refresh').remove();
+
+      jQuery.ajax({
+        url : "{{ url('/getServeList') }}" + "/" + "{{ $branch->id }}",
+        type : "GET",
+        dataType : "json",
+        success:function(data){   
+          if(!jQuery.isEmptyObject(data)){
+            jQuery.each(data, function(key,value){
+              jQuery.ajax({
+                url : "{{ url('/getCustomerById') }}" +  "/" + data[key].customer_id,
+                type : "GET",
+                dataType : "json",
+                success:function(data2){    
+                  if(!jQuery.isEmptyObject(data2)){
+                    //first_name = data2.first_name;
+                    //contact_no = data2.contact_no;
+                    
+                    jQuery('#queue').append('<div class="queueCard card border-dark mt-3"><div class="card-body"><div class="row"><div class="col"><p name="first_name"><i class="bi bi-person-fill"></i> ' + data2.first_name + '</p></div><div class="col-3"><p name="contact_no"><i class="bi bi-telephone-fill"></i> ' + data2.contact_no + '</p></div><div class="col-3"><p name="visited_date"><i class="bi bi-calendar-week-fill"></i> ' + moment(data[key].created_at).fromNow()  + '</p></div><div class="col"><p name="visit_token"><i class="bi bi-ticket-perforated-fill"></i> ' + data[key].token_no + '</p></div><div class="col-2"><p id="visit' + data2.id + '" name="visit_satus" class="visit_satus"><i class="bi bi-stopwatch-fill"></i></p></div></div><p name="visit_purpose"><b>Purpose:</b> ' + data[key].purpose + '</p><p name="visit_remarks"><b>Remarks:</b> ' + data[key].remarks + '</p><div class="queueControlls float-right"><button id="customerInfoButton" class="btn btn-sm btn-primary mr-1" data-toggle="modal" data-target="#customerInfo" data-target-id="' + data2.nic_no + '"><i class="bi bi-person-video2"></i> Customer Info</button><button id="completeServe" class="btn btn-sm btn-success mr-1" data-toggle="modal" data-target="#completeService" data-target-id="' + data[key].id + '"><i class="bi bi-person-check-fill"></i> Complete</button></div></div></div>');
+
+                    var start_time = data[key].start_time;
+
+                    setInterval(function() {
+                        var duration = moment.duration(moment().diff(start_time));
+                        var hours = duration.hours();
+                        var minutes = duration.minutes();
+                        var seconds = duration.seconds();
+                        $('#visit' + data2.id).empty();
+                        $('#visit' + data2.id).append('<i class="bi bi-stopwatch-fill"></i> ');
+                        $('#visit' + data2.id).append(("0" + hours).slice(-2) + ":" + ("0" + minutes).slice(-2) + ":" + ("0" + seconds).slice(-2));
+                    }, 1000);
+                  }
+                }
+              });
+            })
+          }else{
+            
+            jQuery('#queue').append('<div class="alert alert-primary" role="alert"><i class="bi bi-stickies-fill"></i> Serving List is empty for {{ $branch->name }}!</div>');
             
           }
         }

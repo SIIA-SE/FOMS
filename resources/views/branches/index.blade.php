@@ -11,7 +11,7 @@
 
 <div class="list-group">
   <a href="{{route('add-staff.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-plus-fill"></i> Staff Requests <span class="badge badge-danger">4</span></a>
-  <a href="#" class="list-group-item list-group-item-action"><i class="bi bi-stickies-fill"></i> Serving List</a>
+  
 </div>
 
 <br />
@@ -111,13 +111,13 @@
                 @enderror
             </div>
             <div class="form-group">
-                <label for="remarks">Remarks</label><small class="d-inline-block form-text text-muted ml-1">(Optional)</small>
-                <textarea class="form-control @error('remarks') is-invalid @enderror" name="remarks" rows="3"></textarea>
-                @error('remarks')
-                    <span class="invalid-feedback" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
-                @enderror
+              <label for="remarks">Remarks</label><small class="d-inline-block form-text text-muted ml-1">(Optional)</small>
+              <textarea class="form-control @error('remarks') is-invalid @enderror" name="remarks" rows="3"></textarea>
+              @error('remarks')
+                  <span class="invalid-feedback" role="alert">
+                      <strong>{{ $message }}</strong>
+                  </span>
+              @enderror
             </div>
         </div>
         <div class="modal-footer">

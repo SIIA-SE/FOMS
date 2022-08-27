@@ -111,6 +111,7 @@ class VisitController extends Controller
             
             if($request->visit_status == "serve"){
                 $visit->status = "SERVING";
+                $visit->start_time = Carbon::now();
                 $visit->save();
 
                 session()->flash('message', 'Customer Serving has been started Successfully!');
@@ -130,7 +131,27 @@ class VisitController extends Controller
                 return redirect(route('branches.show', $visit->branch_id));
 
             }
+
             
+        }elseif($request->visit_status == "complete"){
+            if($visit = Visit::find($request->vis_ID)){
+                $visit->status = "COMPLETED";
+                $visit->end_time = Carbon::now();
+                $visit->remarks = $request->remarks;
+                $visit->save();
+
+                session()->flash('message', 'Customer visit has been completed Successfully!');
+                session()->flash('alert-type', 'success');
+
+                return redirect(route('branches.show', $visit->branch_id));
+            }else{
+
+                session()->flash('message', 'Requested Visit record not available');
+                session()->flash('alert-type', 'warning');
+
+                return redirect(route('home'));
+            }
+
 
         }else{
             session()->flash('message', 'Requested Visit record not available');

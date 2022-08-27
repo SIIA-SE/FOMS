@@ -120,6 +120,21 @@ class BranchController extends Controller
         }
     }
 
+    function getServeList(Request $request)
+    {
+        if ($request->ajax()) {
+            
+            $branch = Branch::find($request->branch);
+            $institute = Institute::find($branch->institute->id);
+            
+            $visits = Institute::find($branch->institute_id)->visits()->where('branch_id', $branch->id)->where('status', 'SERVING')->orderBy('created_at', 'asc')->get();
+
+            
+            return json_encode($visits);
+            
+        }
+    }
+
     function getCustomerById(Request $request)
     {
         if ($request->ajax()) {
