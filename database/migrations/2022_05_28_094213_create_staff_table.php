@@ -17,6 +17,7 @@ class CreateStaffTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('institute_id')->constrained('institutes');
+            $table->unsignedBigInteger('branch_id')->nullable();
             $table->tinyInteger('status');
             $table->string('role');
             $table->softDeletes();

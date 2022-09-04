@@ -30,7 +30,7 @@ class Institute extends Model
     return $this->hasMany('App\Customer');
    }
    public function user(){
-    return $this->beongsTo('App\User');
+    return $this->belongsTo('App\User');
    }
    public function branches(){
     return $this->hasMany('App\Branch');

@@ -1,5 +1,14 @@
 @extends('layouts.app')
 
+@section('menu')
+<div class="list-group">
+  <a href="@if(Route::is('institutes.index')) {{route('home')}} @elseif(Route::is('trashed-institutes.index')) {{route('institutes.index')}} @else {{route('institutes.index')}} @endif" class="list-group-item list-group-item-action {{ Route::is('home') ? 'active' : '' }}"><i class="bi bi-chevron-left"></i>Back</a>
+</div>
+<div class="list-group mt-5">
+  <a href="{{route('trashed-institutes.index')}}" class="list-group-item list-group-item-action"><i class="bi bi-trash3"></i> Trashed Institutes</a>
+</div>
+@endsection
+
 @section('content')
 
 <div class="card card-default">

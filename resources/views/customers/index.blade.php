@@ -9,9 +9,16 @@
 
 <br />
 
-<div class="list-group">
-  <a href="{{route('add-staff.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-plus-fill"></i> Staff Requests <span class="badge badge-danger">4</span></a>
-</div>
+@foreach(Auth::user()->institutes as $userInstitute)
+  @if($userInstitute->id == $institute->id)
+    <div class="list-group">
+      <a href="{{route('add-staff.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-plus-fill"></i> Staff Requests <span class="badge badge-danger">@if(count(App\Institute::find($institute->id)->staff()->where('status', 2)->get()) > 0) {{ count(App\Institute::find($institute->id)->staff()->where('status', 2)->get()) }} @endif</span></a>
+      <a id="staffList" href="#" class="list-group-item list-group-item-action"><i class="bi bi-person-lines-fill"></i> Staff List</a>
+    </div>
+  @else
+  @continue
+  @endif
+@endforeach
 
 <br />
 @endsection
@@ -106,18 +113,18 @@
         </div>
         <div class="modal-body">
             <div class="form-group">
-                <label for="branch">Select Branch</label>
-                <select class="form-control @error('branch') is-invalid @enderror" name="branch" value="{{ old('branch') }}">
-                <option selected disabled>Select...</option>
-                @foreach($institute->branches as $branch)
-                    <option value="{{ $branch->id }}">{{ $branch->name }}</option>
-                @endforeach
-                </select>
-                @error('branch')
-                    <span class="invalid-feedback" role="alert">
-                        <strong>{{ $message }}</strong>
-                    </span>
-                @enderror
+              <label for="branch">Select Branch</label>
+              <select class="form-control @error('branch') is-invalid @enderror" name="branch" value="{{ old('branch') }}">
+              <option selected disabled>Select...</option>
+              @foreach($institute->branches as $branch)
+                  <option value="{{ $branch->id }}">{{ $branch->name }}</option>
+              @endforeach
+              </select>
+              @error('branch')
+                  <span class="invalid-feedback" role="alert">
+                      <strong>{{ $message }}</strong>
+                  </span>
+              @enderror
             </div>
             <div class="form-group">
                 <label for="purpose">Purpose of Visit</label>

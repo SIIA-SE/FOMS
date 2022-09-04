@@ -45,4 +45,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('getCustomerById/{id}', 'BranchController@getCustomerById')->name('customerbyid.get');
     Route::get('changeVisit/', 'VisitController@changeVisit')->name('visit.change');
     Route::get('getServeList/{branch}', 'BranchController@getServeList')->name('serve.get');
+    Route::get('institutes/{id}/staff-list', 'InstituteController@addStaff')->name('staff-list.index');
+    Route::get('getSStaffList/{institute}/{role}', 'InstituteController@getSStaffList')->name('staff.get');
 });

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Institute;
 use App\Staff;
+use App\User;
 use Illuminate\Support\Str;
 use App\Http\Requests\Institutes\CreateInstituteRequest;
 use App\Http\Requests\Institutes\UpdateInstituteRequest;
@@ -98,7 +99,7 @@ class InstituteController extends Controller
             foreach($institute->staff as $staff){
                 if($staff->user_id == Auth::id()){
                     if($staff->status == "2"){
-                        session()->flash('message', 'Your request is to join the institute is pending..!');
+                        session()->flash('message', 'Your request to join the institute is pending..!');
                         session()->flash('alert-type', 'warning');
                         return redirect(route('institutes.index'));
                     }elseif($staff->status == "1"){
@@ -242,25 +243,26 @@ class InstituteController extends Controller
     public function joinInstitute(Request $request)
     {
         if($request->institute_id_button == "join"){
-                if($institute = Institute::firstWhere('code', $request->institute_id)){
-                    if(!Staff::where('user_id', Auth::id())->where('institute_id', $request->institute_id)->get()){
-                        Staff::create([
-                            'user_id' => Auth::id(),
-                            'institute_id' => $institute->id,
-                            'status' => 2,
-                            'role' => 'user'
-                        ]);
+            if($institute = Institute::firstWhere('code', $request->institute_id)){
+                $result = Staff::where('user_id', Auth::id())->where('institute_id', $institute->id)->first();
+                if(empty($result)){
+                    Staff::create([
+                        'user_id' => Auth::id(),
+                        'institute_id' => $institute->id,
+                        'status' => 2,
+                        'role' => 'user'
+                    ]);
 
-                        session()->flash('message', 'Request to join the institute has been sent!');
-                        session()->flash('alert-type', 'success');
+                    session()->flash('message', 'Request to join the institute has been sent!');
+                    session()->flash('alert-type', 'success');
 
-                        return redirect(route('institutes.index'));
-                    }else{
-                        session()->flash('message', 'You have already joined the institute!');
-                        session()->flash('alert-type', 'danger');
-        
-                        return redirect(route('institutes.index'));
-                    }
+                    return redirect(route('institutes.index'));
+                }else{
+                    session()->flash('message', 'You have already joined the institute!');
+                    session()->flash('alert-type', 'danger');
+    
+                    return redirect(route('institutes.index'));
+                }
             }else{
                
                 session()->flash('message', 'Institute is not found!');
@@ -271,7 +273,46 @@ class InstituteController extends Controller
         }
 
     }
-    public function addStaff(Request $request){
+    public function addStaff(Request $request)
+    {
+
+
+        if($request->add_staff_button == "accept"){
+            $staff = Staff::find($request->id);
+            $staff->status = 1;
+            $staff->role = $request->user_type;
+            $staff->branch_id = $request->branch;
+            $staff->save();
+            session()->flash('message', 'Staff has beed added into your institute');
+            session()->flash('alert-type', 'success');
+
+            return redirect(route('institutes.show', Staff::find($request->id)->institute->id));
+        }
+
+        if($request->add_staff_button == "reject"){
+            $staff = Staff::find($request->id);
+            $staff->status = 0;
+            $staff->save();
+            session()->flash('message', 'Request has been rejected.');
+            session()->flash('alert-type', 'success');
+
+            return redirect(route('institutes.show', Staff::find($request->id)->institute->id));
+        }
+
+        if($request->update_staff_button == "change"){
+            
+            $staff = Staff::find($request->id);
+            $staff->role = $request->user_type;
+            if($request->branch != null){
+                $staff->branch_id = $request->branch;
+            }
+            
+            $staff->save();
+            session()->flash('message', 'Staff details have beed updated!');
+            session()->flash('alert-type', 'success');
+
+            return redirect(route('institutes.show', Staff::find($request->id)->institute->id));
+        }
 
         if($institute = Institute::find($request->id)){
             foreach($institute->staff as $staff){
@@ -299,27 +340,15 @@ class InstituteController extends Controller
             return redirect(route('institutes.index'));
         }
 
-        if($request->add_staff_button == "accept"){
-            $staff = Staff::find($request->id);
-            $staff->status = 1;
-            $staff->save();
-            session()->flash('message', 'Staff has beed added into your institute');
-            session()->flash('alert-type', 'success');
-
-            return redirect(route('institutes.show', Staff::find($request->id)->institute->id));
+    }
+    public function getSStaffList(Request $request)
+    {
+        if ($request->ajax()) {
+            $staff = Institute::find($request->institute)->staff()->where('role', $request->role)->get();
+            return json_encode($staff);
         }
 
-        if($request->add_staff_button == "reject"){
-            $staff = Staff::find($request->id);
-            $staff->status = 0;
-            $staff->save();
-            session()->flash('message', 'Request has been rejected.');
-            session()->flash('alert-type', 'success');
-
-            return redirect(route('institutes.show', Staff::find($request->id)->institute->id));
-        }
-
-        
     }
     
+
 }

@@ -9,9 +9,16 @@
 
 <br />
 
-<div class="list-group">
-  <a href="{{route('add-staff.index', $customer_inst->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-plus-fill"></i> Staff Requests <span class="badge badge-danger">4</span></a>
-</div>
+@foreach(Auth::user()->institutes as $userInstitute)
+  @if($userInstitute->id == $customer_inst->id)
+    <div class="list-group">
+      <a href="{{route('add-staff.index', $customer_inst->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-plus-fill"></i> Staff Requests <span class="badge badge-danger">@if(count(App\Institute::find($customer_inst->id)->staff()->where('status', 2)->get()) > 0) {{ count(App\Institute::find($customer_inst->id)->staff()->where('status', 2)->get()) }} @endif</span></a>
+      <a id="staffList" href="#" class="list-group-item list-group-item-action"><i class="bi bi-person-lines-fill"></i> Staff List</a>
+    </div>
+  @else
+  @continue
+  @endif
+@endforeach
 
 <br />
 @endsection

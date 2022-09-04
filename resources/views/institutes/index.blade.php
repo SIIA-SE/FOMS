@@ -79,35 +79,32 @@
       <div class="card">
         <div class="card-header" id="headingTwo">
           <h2 class="mb-0">
-            <button class="btn btn-block text-left collapsed font-weight-bold" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+            <button class="btn btn-block text-left collapsed font-weight-bold" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
               Joined Institutes
             </button>
           </h2>
         </div>
-        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+        <div id="collapseTwo" class="collapse show" aria-labelledby="headingTwo" data-parent="#accordionExample">
           <div class="card-body">
             @forelse($joinedInstitutes as $Joinedinstitute)
-            
               @if(!App\Institute::withTrashed()->find($Joinedinstitute->institute_id)->trashed())
-                <div class="d-inline-block mt-4 mr-4 card" style="width: 18rem;">
-                  <img class="card-img-top" src="{{asset('/storage/' . App\Institute::find($Joinedinstitute->institute_id)->image)}}" alt="{{App\Institute::find($Joinedinstitute->institute_id)->name}}">
-                  <div class="card-body">
-                    <h5 class="card-title">{{App\Institute::find($Joinedinstitute->institute_id)->name}}</h5>
-                    <p class="card-text">Institute Code: {{App\Institute::find($Joinedinstitute->institute_id)->code}}</p>
-                    <a href="{{route('institutes.show', App\Institute::find($Joinedinstitute->institute_id)->id)}}" class="btn btn-primary btn-sm"><i class="bi bi-door-open"></i> Open</a>
-                      @if($Joinedinstitute->role == 'sys_admin')
-                        <a href="{{route('institutes.edit', App\Institute::find($Joinedinstitute->institute_id)->id)}}" class="btn btn-success btn-sm"><i class="bi bi-pencil"></i> Edit</a>
-                        <a href="#" class="btn btn-danger btn-sm" onclick="handleDelete({{ App\Institute::find($Joinedinstitute->institute_id)->id }})"><i class="bi bi-trash3"></i> {{ App\Institute::find($Joinedinstitute->institute_id)->trashed() ? 'Delete': 'Trash' }}</a>
-                      @endif
+                  <div class="d-inline-block mt-4 mr-4 card" style="width: 18rem;">
+                    <img class="card-img-top" src="{{asset('/storage/' . App\Institute::find($Joinedinstitute->institute_id)->image)}}" alt="{{App\Institute::find($Joinedinstitute->institute_id)->name}}">
+                    <div class="card-body">
+                      <h5 class="card-title">{{App\Institute::find($Joinedinstitute->institute_id)->name}}</h5>
+                      <p class="card-text">Institute Code: {{App\Institute::find($Joinedinstitute->institute_id)->code}}</p>
+                      <a href="{{route('institutes.show', App\Institute::find($Joinedinstitute->institute_id)->id)}}" class="btn btn-primary btn-sm"><i class="bi bi-door-open"></i> Open</a>
+                        @if($Joinedinstitute->role == 'sys_admin')
+                          <a href="{{route('institutes.edit', App\Institute::find($Joinedinstitute->institute_id)->id)}}" class="btn btn-success btn-sm"><i class="bi bi-pencil"></i> Edit</a>
+                          <a href="#" class="btn btn-danger btn-sm" onclick="handleDelete({{ App\Institute::find($Joinedinstitute->institute_id)->id }})"><i class="bi bi-trash3"></i> {{ App\Institute::find($Joinedinstitute->institute_id)->trashed() ? 'Delete': 'Trash' }}</a>
+                        @endif
+                    </div>
                   </div>
-                </div>
               @endif
 
               
             @empty
-            <div class="alert alert-info mt-3" role="alert">
-            You don't have any Institutes.
-            </div>
+            <div class="alert alert-primary" role="alert"><i class="bi bi-people-fill"></i> You don't have any institutes!</div>
             @endforelse
           </div>
         </div>
