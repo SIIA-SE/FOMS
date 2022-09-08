@@ -125,7 +125,10 @@
                       </span>
                   @enderror
                 </div>
-                <button type="submit" name="update_staff_button" value="change" class="btn btn btn-success mt-2 ml-2 mr-2 rounded"><i class="bi bi-check-lg"></i> Update</button>
+                <div class="btn-group" role="group" aria-label="Basic example">
+                  <button type="submit" name="update_staff_button" value="change" class="btn btn btn-success mt-2 ml-2 rounded"><i class="bi bi-check-lg"></i> Update</button>
+                  <button type="submit" name="update_staff_button" value="disable" class="btn btn btn-danger mt-2 ml-2 rounded"><i class="bi bi-exclamation-octagon-fill"></i> Disable</button>
+                </div>
               </div>
             </div>
           </div>
