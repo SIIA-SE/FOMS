@@ -9,13 +9,17 @@
 
 <br />
 
-<div class="list-group">
-  <a href="{{route('add-staff.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-plus-fill"></i> Staff Requests <span class="badge badge-danger">@if(count(App\Institute::find($institute->id)->staff()->where('status', 2)->get()) > 0) {{ count(App\Institute::find($institute->id)->staff()->where('status', 2)->get()) }} @endif</span></a>
-</div>
-<br />
-<div class="list-group">
-  <a id="serve_list" href="#" class="list-group-item list-group-item-action"><i class="bi bi-stickies-fill"></i> Serving List</a>
-</div>
+@foreach(Auth::user()->institutes as $userInstitute)
+  @if($userInstitute->id == $institute->id)
+    <div class="list-group">
+      <a href="{{route('add-staff.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-plus-fill"></i> Staff Requests <span class="badge badge-danger">@if(count(App\Institute::find($institute->id)->staff()->where('status', 2)->get()) > 0) {{ count(App\Institute::find($institute->id)->staff()->where('status', 2)->get()) }} @endif</span></a>
+      <a id="staffList" href="{{route('staff-list.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-lines-fill"></i> Staff List</a>
+      <a id="generateReports" href="{{route('get-data.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-arrow-down-square-fill"></i> Download Data</a>
+    </div>
+  @else
+  @continue
+  @endif
+@endforeach
 
 <br />
 @endsection

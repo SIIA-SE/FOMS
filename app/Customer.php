@@ -22,6 +22,8 @@ class Customer extends Model
    //Timestamps
    public $timestamps = true;
 
+   protected $hidden = ['deleted_at', 'created_at', 'updated_at'];
+
    //link
    
    public function institute(){

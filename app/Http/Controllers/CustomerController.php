@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
 use DB;
 use Carbon\Carbon;
+use App\Province;
+use App\District;
+use App\DSDivision;
+use App\GNDivision;
 
 class CustomerController extends Controller
 {
@@ -207,6 +211,11 @@ class CustomerController extends Controller
      */
     public function store(CreateCustomerRequest $request)
     {
+        $province = Province::find($request->province)->name;
+        $district = District::find($request->district)->name;
+        $ds_division = DSDivision::find($request->dsdivision)->name;
+        $gn_division = GNDivision::find($request->gndivision)->name;
+
         //Save New Customer Data to DB
         $customer = Customer::create([
             'institute_id' => $request->institute_id,
@@ -217,10 +226,10 @@ class CustomerController extends Controller
             'address' => $request->address,
             'contact_no' => $request->contact_no,
             'email' => $request->email,
-            'province' => $request->province,
-            'district' => $request->district,
-            'ds_division' => $request->dsdivision,
-            'gn_division' => $request->gndivision,
+            'province' => $province,
+            'district' => $district,
+            'ds_division' => $ds_division,
+            'gn_division' => $gn_division,
         ]);
 
         session()->flash('message', 'Customer Data has been added Successfully!');

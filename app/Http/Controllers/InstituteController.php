@@ -10,6 +10,13 @@ use Illuminate\Support\Str;
 use App\Http\Requests\Institutes\CreateInstituteRequest;
 use App\Http\Requests\Institutes\UpdateInstituteRequest;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\CustomerExport;
+use App\Exports\CustomerSelectExport;
+use App\Exports\AllVisitsExport;
+use App\Exports\CustomerVisitExport;
+use App\Exports\VisitRangeExport;
+use Carbon\Carbon;
 
 class InstituteController extends Controller
 {
@@ -305,6 +312,12 @@ class InstituteController extends Controller
             $staff->role = $request->user_type;
             if($request->branch != null){
                 $staff->branch_id = $request->branch;
+            }else{
+
+                session()->flash('message', 'Please select branch!');
+                session()->flash('alert-type', 'warning');
+
+                return redirect(route('institutes.show', Staff::find($request->id)->institute->id));
             }
             
             $staff->save();
@@ -312,6 +325,28 @@ class InstituteController extends Controller
             session()->flash('alert-type', 'success');
 
             return redirect(route('institutes.show', Staff::find($request->id)->institute->id));
+        }
+        if($request->update_staff_button == "disable"){
+            $staff = Staff::find($request->id);
+            $staff->status = "3";
+
+            $staff->save();
+            session()->flash('message', 'Staff profile has beed disabled!');
+            session()->flash('alert-type', 'success');
+
+            return redirect(route('institutes.show', Staff::find($request->id)->institute->id));
+
+        }
+        if($request->update_staff_button == "enable"){
+            $staff = Staff::find($request->id);
+            $staff->status = "1";
+
+            $staff->save();
+            session()->flash('message', 'Staff profile has beed enabled!');
+            session()->flash('alert-type', 'success');
+
+            return redirect(route('institutes.show', Staff::find($request->id)->institute->id));
+
         }
 
         if($institute = Institute::find($request->id)){
@@ -349,6 +384,59 @@ class InstituteController extends Controller
         }
 
     }
+    public function getData(Request $request){
+
+        if($request->download_data_button == "customer"){
+
+            if($request->customerSelection == "allCustomers"){
+                return Excel::download(new CustomerExport(), 'customers_' . time() . '.xlsx');
+
+            }elseif($request->customerSelection == "selectedCustomers"){
+                return Excel::download(new CustomerSelectExport($request->custId), 'customers_' . time() . '.xlsx');
+            }
+            
+        }
+
+        if($request->download_data_button == "visit"){
+            if($request->visitSelection == "allVisits"){
+                return Excel::download(new AllVisitsExport($request->Inst_ID), 'visits_' . time() . '.xlsx');
+
+            }elseif($request->visitSelection == "selectedVisits"){
+                return Excel::download(new CustomerVisitExport($request->customerId), 'visits_' . time() . '.xlsx');
+            }
+            elseif($request->visitSelection == "rengeOfVisits"){
+                
+                return Excel::download(new VisitRangeExport($request->Inst_ID, $request->start_date, $request->end_date), 'visits_' . time() . '.xlsx');
+            }
+        }
+        
+        if($institute = Institute::find($request->id)){
+            foreach($institute->staff as $staff){
+                if($staff->user_id == Auth::id()){
+                    if($staff->status == 1){
+                        return view('institutes.show')->with('institute', $institute);
+                    }else{
+                        session()->flash('message', 'You are not active staff of the institute!');
+                        session()->flash('alert-type', 'warning');
+
+                        return redirect(route('institutes.index'));
+                    }
+                }
+            }
+            session()->flash('message', 'You do not have permission to download data of the institute!');
+            session()->flash('alert-type', 'warning');
+
+            return redirect(route('institutes.index'));
+
+            
+        }else{
+            session()->flash('message', 'Institute is not available');
+            session()->flash('alert-type', 'danger');
+
+            return redirect(route('institutes.index'));
+        }
+    }
+    
     
 
 }

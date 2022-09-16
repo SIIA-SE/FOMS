@@ -13,7 +13,8 @@
   @if($userInstitute->id == $institute->id)
     <div class="list-group">
       <a href="{{route('add-staff.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-plus-fill"></i> Staff Requests <span class="badge badge-danger">@if(count(App\Institute::find($institute->id)->staff()->where('status', 2)->get()) > 0) {{ count(App\Institute::find($institute->id)->staff()->where('status', 2)->get()) }} @endif</span></a>
-      <a id="staffList" href="#" class="list-group-item list-group-item-action"><i class="bi bi-person-lines-fill"></i> Staff List</a>
+      <a id="staffList" href="{{route('staff-list.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-lines-fill"></i> Staff List</a>
+      <a id="generateReports" href="{{route('get-data.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-arrow-down-square-fill"></i> Download Data</a>
     </div>
   @else
   @continue
@@ -71,10 +72,10 @@
                     <tr>
                     <th scope="row">Address:</th>
                     <td>{{ $customer->address }}, 
-                        {{ App\GNDivision::find($customer->gn_division)->name }}, 
-                        {{ App\DSDivision::find($customer->ds_division)->name }}, 
-                        {{ App\District::find($customer->district)->name }}, 
-                        {{ App\Province::find($customer->province)->name }} Province</td>
+                        {{ $customer->gn_division }}, 
+                        {{ $customer->ds_division }}, 
+                        {{ $customer->district }}, 
+                        {{ $customer->province }} Province</td>
                     </tr>
                     <tr>
                     <th scope="row" class="col-md-2">Contact No:</th>

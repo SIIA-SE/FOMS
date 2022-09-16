@@ -47,4 +47,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('getServeList/{branch}', 'BranchController@getServeList')->name('serve.get');
     Route::get('institutes/{id}/staff-list', 'InstituteController@addStaff')->name('staff-list.index');
     Route::get('getSStaffList/{institute}/{role}', 'InstituteController@getSStaffList')->name('staff.get');
+    Route::get('institutes/{id}/get-data', 'InstituteController@getData')->name('get-data.index');
 });
