@@ -389,7 +389,7 @@ class InstituteController extends Controller
         if($request->download_data_button == "customer"){
 
             if($request->customerSelection == "allCustomers"){
-                return Excel::download(new CustomerExport(), 'customers_' . time() . '.xlsx');
+                return Excel::download(new CustomerExport($request->Inst_ID), 'customers_' . time() . '.xlsx');
 
             }elseif($request->customerSelection == "selectedCustomers"){
                 return Excel::download(new CustomerSelectExport($request->custId), 'customers_' . time() . '.xlsx');

@@ -181,6 +181,7 @@
                 </span>
             @enderror
           </div>
+          <input type="hidden" id="Inst_ID" name="Inst_ID" value="{{ $institute->id }}">
         </div>
         <div class="col-4">
           <button type="submit" name="download_data_button" value="customer" class="btn btn btn-primary mt-2 ml-2 rounded"><i class="bi bi-arrow-down-square-fill"></i> Download</button>
