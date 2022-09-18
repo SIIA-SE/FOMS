@@ -95,6 +95,12 @@ class BranchController extends Controller
      */
     public function show(Request $request)
     {
+        if ($request->ajax()) {
+            
+            $branch = Branch::find($request->branch);
+            return json_encode($branch);
+        }
+
         if($branch = Branch::find($request->branch)){
             
             $institute = Institute::find($branch->institute->id);
@@ -138,6 +144,7 @@ class BranchController extends Controller
         }
         
     }
+
 
     function getQueue(Request $request)
     {
@@ -209,9 +216,25 @@ class BranchController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        //uPDATE
+        if($branch = Branch::find($request->branch)){
+            $branch->name = $request->name;
+            $branch->branch_head = $request->branch_head;
+            $branch->save();
+
+            session()->flash('message', 'Branch details has been updated successfully!');
+            session()->flash('alert-type', 'success');
+
+            foreach(Institute::find($branch->institute_id)->staff as $staff){
+                if($staff->user_id == Auth::user()->id){
+                    $staffRole = $staff->role;
+                }
+            }
+
+            return redirect(route('branches.index', ['id' => $branch->institute_id]))->with('staffRole', $staff->role);
+        }
     }
 
     /**

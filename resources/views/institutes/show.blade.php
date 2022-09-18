@@ -43,38 +43,49 @@
     <div class="card-body">
       <div class="d-inline-block mt-4 mr-2 card border-dark" style="width: 18rem;">
         <div class="card-body">
-          <h5 class="card-title font-weight-bold">Total Staff</h5>
-          <p class="card-text">{{ count(\App\Institute::find($institute->id)->staff()->get()) }}</p>
+          <h5 class="card-title font-weight-bold"><i class="bi bi-person-lines-fill"></i> Staff</h5>
+          <p class="card-text">Total: {{ count(\App\Institute::find($institute->id)->staff()->get()) }} | Active: {{ count(\App\Institute::find($institute->id)->staff()->where('status', 1)->get()) }} | Inactive: {{ count(\App\Institute::find($institute->id)->staff()->where('status', 2)->get()) }}</p>
           <div class="progress">
             <div class="progress-bar" role="progressbar" style="width: {{ count(\App\Institute::find($institute->id)->staff()->get()) }}%" aria-valuenow="{{ count(\App\Institute::find($institute->id)->staff()->get()) }}" aria-valuemin="0" aria-valuemax="100"></div>
           </div><br />
-          <a href="" class="btn btn-primary btn-sm"><i class="bi bi-person-lines-fill"></i> Staff List</a>
+          <a href="{{route('staff-list.index', $institute->id)}}" class="btn btn-primary btn-sm"><i class="bi bi-person-lines-fill"></i> View</a>
         </div>
       </div>
 
       <div class="d-inline-block mt-4 mr-2 card border-dark" style="width: 18rem;">
         <div class="card-body">
-          <h5 class="card-title font-weight-bold">Total Customers</h5>
-          <p class="card-text">{{ count(\App\Institute::find($institute->id)->customers()->get()) }}</p>
+          <h5 class="card-title font-weight-bold"><i class="bi bi-person-video2"></i> Customers</h5>
+          <p class="card-text">Total: {{ count(\App\Institute::find($institute->id)->customers()->get()) }} | Male: {{ count(\App\Institute::find($institute->id)->customers()->where('gender', 'Male')->get()) }} | Female: {{ count(\App\Institute::find($institute->id)->customers()->where('gender', 'Female')->get()) }}</p>
           <div class="progress">
             <div class="progress-bar" role="progressbar" style="width: {{ count(\App\Institute::find($institute->id)->customers()->get()) }}%" aria-valuenow="{{ count(\App\Institute::find($institute->id)->customers()->get()) }}" aria-valuemin="0" aria-valuemax="100"></div>
           </div><br />
-          <a href="" class="btn btn-primary btn-sm"><i class="bi bi-person-lines-fill"></i> Customers</a>
+          <a href="{{ route('customers.index', ['id' => $institute->id]) }}" class="btn btn-primary btn-sm"><i class="bi bi-person-video2"></i> View</a>
         </div>
       </div>
     
 
       <div class="d-inline-block mt-4 mr-2 card border-dark" style="width: 18rem;">
-          <div class="card-body">
-            <h5 class="card-title font-weight-bold">Total Visits</h5>
-            <p class="card-text">{{ count(\App\Institute::find($institute->id)->visits()->get()) }}</p>
-            <div class="progress">
-              <div class="progress-bar" role="progressbar" style="width: {{ count(\App\Institute::find($institute->id)->visits()->get()) }}%" aria-valuenow="{{ count(\App\Institute::find($institute->id)->visits()->get()) }}" aria-valuemin="0" aria-valuemax="100"></div>
-            </div><br />
-            <a href="" class="btn btn-primary btn-sm"><i class="bi bi-person-lines-fill"></i> Customers</a>
-          </div>
+        <div class="card-body">
+          <h5 class="card-title font-weight-bold"><i class="bi bi-signpost-fill"></i> Visits</h5>
+          <p class="card-text">Total: {{ count(\App\Institute::find($institute->id)->visits()->get()) }} | Serving: {{ count(\App\Institute::find($institute->id)->visits()->where('status', 'SERVING')->get()) }} | Completed: {{ count(\App\Institute::find($institute->id)->visits()->where('status', 'COMPLETED')->get()) }}</p>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" style="width: {{ count(\App\Institute::find($institute->id)->visits()->get()) }}%" aria-valuenow="{{ count(\App\Institute::find($institute->id)->visits()->get()) }}" aria-valuemin="0" aria-valuemax="100"></div>
+          </div><br />
+          <a href="{{ route('customers.index', ['id' => $institute->id]) }}" class="btn btn-primary btn-sm"><i class="bi bi-signpost-fill"></i> View</a>
         </div>
       </div>
+
+      <div class="d-inline-block mt-4 mr-2 card border-dark" style="width: 18rem;">
+        <div class="card-body">
+          <h5 class="card-title font-weight-bold"><i class="bi bi-diagram-3"></i> Branches</h5>
+          <p class="card-text">Total: {{ count(\App\Institute::find($institute->id)->branches()->get()) }} </p>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" style="width: {{ count(\App\Institute::find($institute->id)->visits()->get()) }}%" aria-valuenow="{{ count(\App\Institute::find($institute->id)->visits()->get()) }}" aria-valuemin="0" aria-valuemax="100"></div>
+          </div><br />
+          <a href="{{ route('customers.index', ['id' => $institute->id]) }}" class="btn btn-primary btn-sm"><i class="bi bi-diagram-3"></i> View</a>
+        </div>
+      </div>
+
     </div>
   </div>
 @endif
@@ -237,7 +248,7 @@
               <input type="hidden" id="Inst_ID" name="Inst_ID" value="{{ $institute->id }}">
             </div>
             <div class="col-4">
-              <button type="submit" name="download_data_button" value="customer" class="btn btn btn-primary mt-2 ml-2 rounded"><i class="bi bi-arrow-down-square-fill"></i> Download</button>
+              <button type="submit" name="download_data_button" value="customer" class="btn btn btn-primary mt-2 ml-2 rounded"><i class="bi bi-filetype-xlsx"></i> Download</button>
             </div>
           </div>
         </div>
@@ -283,7 +294,7 @@
               </div>
             </div>
             <div class="col-4">
-              <button type="submit" name="download_data_button" value="visit" class="btn btn btn-primary mt-2 ml-2 rounded"><i class="bi bi-arrow-down-square-fill"></i> Download</button>
+              <button type="submit" name="download_data_button" value="visit" class="btn btn btn-primary mt-2 ml-2 rounded"><i class="bi bi-filetype-xlsx"></i> Download</button>
               <div class="form-group">
                 <label for="end_date">Select Start Date</label>
                 <div class="input-group date" name="start_date" data-provide="datepicker">

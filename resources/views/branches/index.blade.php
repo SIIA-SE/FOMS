@@ -2,7 +2,7 @@
 
 @section('menu')
 <div class="list-group">
-  <a href="{{ route('institutes.index') }}" class="list-group-item list-group-item-action"><i class="bi bi-chevron-left"></i>Back</a>
+  <a href=" {{ route('institutes.show', $institute->id) }}" class="list-group-item list-group-item-action"><i class="bi bi-chevron-left"></i>Back</a>
   @if($staffRole == 'manager' || $staffRole == 'frontdeskuser')
   <a href="{{ route('customers.index', ['id' => $institute->id]) }}" class="list-group-item list-group-item-action {{ Route::is('customers.index') ? 'active' : '' }}"><i class="bi bi-person-video2"></i> Customers</a>
   @endif
@@ -56,6 +56,9 @@
             @if($staffRole == 'frontdeskuser')
             <button type="button" id="addVisitButton" href="#" class="btn btn-sm btn-success mr-1" data-toggle="modal" data-target="#addVisit" data-target-id="{{$branch->id}}"><i class="bi bi-person-video2"></i> Create Visit</button>
             @endif
+            @if($staffRole == 'manager' || $staffRole == 'sys_admin')
+            <a href="#" class="btn btn-sm btn-success mr-1" data-toggle="modal" data-target="#editBranch" data-target-id="{{$branch->id}}"><i class="bi bi-pencil-square"></i> Edit</a>
+            @endif
         </div>
       </div>
     @endif
@@ -95,6 +98,47 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <button type="submit" class="btn btn-success">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<form action="" method="POST" id="editBranchForm">
+  @csrf
+  @method('PUT')
+  <div class="modal fade" id="editBranch" tabindex="-1" role="dialog" aria-labelledby="editBranchLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editBranchLabel">Edit Branch of {{ $institute->name }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="name">Branch Name</label>
+            <input type="text" class="name form-control @error('name') is-invalid @enderror" name="name" value="">
+            @error('name')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+          </div>
+          <div class="form-group">
+            <label for="branch_head">Branch Head</label><small class="d-inline-block form-text text-muted ml-1">(Optional)</small>
+            <input type="text" class="branch_head form-control @error('branch_head') is-invalid @enderror" name="branch_head" value="">
+            @error('branch_head')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success">Update</button>
         </div>
       </div>
     </div>
@@ -204,6 +248,29 @@
       
 
         
+    });
+
+    $("#editBranch").on("show.bs.modal", function (e) {
+      var branch_id = $(e.relatedTarget).data('target-id');
+      $('#editBranchForm').attr('action', '{{ url("/branches") }}' + '/' + branch_id);
+      $.ajax({
+
+      url: "{{ url('/branches') }}" + "/" + branch_id,
+
+      type:'GET',
+
+      dataType : "json",
+
+      success:function (data) {
+
+        $('.name').val(data.name);
+        $('.branch_head').val(data.branch_head);
+
+      }
+
+      })
+
+      
     });
   });
 </script>

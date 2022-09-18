@@ -377,9 +377,16 @@ class InstituteController extends Controller
             foreach($institute->staff as $staff){
                 if($staff->user_id == Auth::id()){
                     if($staff->status == 1){
-                        return view('institutes.show')->with('institute', $institute)->with('staffRole', $staff->role);
+                        if($staff->role == "sys_admin" || $staff->role == "manager"){
+                            return view('institutes.show')->with('institute', $institute)->with('staffRole', $staff->role);
+                        }else{
+                            session()->flash('message', 'You do not have permission to view staff requests of the institute!');
+                            session()->flash('alert-type', 'warning');
+
+                        return redirect(route('institutes.index'));
+                        }
                     }else{
-                        session()->flash('message', 'You do not have permission to view staff requests of the institute!');
+                        session()->flash('message', 'You are not active staff of the institute!');
                         session()->flash('alert-type', 'warning');
 
                         return redirect(route('institutes.index'));
