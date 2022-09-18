@@ -6,6 +6,7 @@ use App\Customer;
 use App\Institute;
 use App\Visit;
 use App\Branch;
+use App\Staff;
 use Illuminate\Http\Request;
 use App\Http\Requests\Customers\CreateCustomerRequest;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,7 @@ use App\Province;
 use App\District;
 use App\DSDivision;
 use App\GNDivision;
+use Illuminate\Support\Facades\Gate;
 
 class CustomerController extends Controller
 {
@@ -26,28 +28,45 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $institute = Institute::find($request->id);
-        
-        foreach($institute->staff as $staff){
-            if($staff->user_id == Auth::id()){
-                if($staff->status == 1){
-                    //Return view
-                    return view('customers.index')->with('institute', $institute);
-                }else{
-                    session()->flash('message', 'You do not have permission to view customers of the institute!');
-                    session()->flash('alert-type', 'warning');
 
-                    return redirect(route('institutes.index'));
+        if($institute = Institute::find($request->id)){
+        
+            
+            foreach($institute->staff as $staff){
+                if($staff->user_id == Auth::id()){
+                    if($staff->status == 1){
+                        if($staff->role == 'frontdeskuser' || $staff->role == 'manager'){
+                            //Return view
+                            return view('customers.index')->with('institute', $institute)->with('staffRole', $staff->role);
+                        }else{
+                            session()->flash('message', 'You do not have permission to view the customers of the institute!');
+                            session()->flash('alert-type', 'warning');
+
+                            return redirect(route('institutes.index'));
+                        }
+                    }else{
+                        session()->flash('message', 'You are not active staff of the institute!');
+                        session()->flash('alert-type', 'warning');
+
+                        return redirect(route('institutes.index'));
+                    }
                 }
             }
-        }
-        
-        session()->flash('message', 'You do not have permission to view customers of the institute!');
-        session()->flash('alert-type', 'warning');
+            
+            session()->flash('message', 'You are not staff of the institute!');
+            session()->flash('alert-type', 'warning');
 
-        return redirect(route('institutes.index'));
-    
-       
+            return redirect(route('institutes.index'));
+            
+            
+        }
+        else{
+            session()->flash('message', 'Requested Institute is not available!');
+            session()->flash('alert-type', 'danger');
+
+            return redirect(route('institutes.index'));
+        }
+
     }
 
     function autoComplete(Request $request)
@@ -179,27 +198,43 @@ class CustomerController extends Controller
      */
     public function create(Request $request)
     {
-        $institute = Institute::find($request->id);
+        if($institute = Institute::find($request->id)){
         
-        foreach($institute->staff as $staff){
-            if($staff->user_id == Auth::id()){
-                if($staff->status == 1){
-                    //Return View
-                    return view('customers.create')->with('customer_inst', $institute);
-                }
-                else{
-                    session()->flash('message', 'You do not have permission to create customer of the institute!');
-                    session()->flash('alert-type', 'warning');
+            
+            foreach($institute->staff as $staff){
+                if($staff->user_id == Auth::id()){
+                    if($staff->status == 1){
+                        if($staff->role == 'frontdeskuser' || $staff->role == 'manager'){
+                            //Return View
+                            return view('customers.create')->with('customer_inst', $institute)->with('staffRole', $staff->role);
+                        }else {
+                            session()->flash('message', 'You do not have permission to create customers of the institute!');
+                            session()->flash('alert-type', 'warning');
 
-                    return redirect(route('institutes.index'));
+                            return redirect(route('institutes.index'));
+                        }
+                    }
+                    else{
+                        session()->flash('message', 'You are not active staff of the institute!');
+                        session()->flash('alert-type', 'warning');
+
+                        return redirect(route('institutes.index'));
+                    }
                 }
             }
+
+            session()->flash('message', 'You are not staff of the institute!');
+            session()->flash('alert-type', 'warning');
+
+            return redirect(route('institutes.index'));
+
+
+        }else{
+            session()->flash('message', 'Requested Institute is not available!');
+            session()->flash('alert-type', 'danger');
+
+            return redirect(route('institutes.index'));
         }
-
-        session()->flash('message', 'You do not have permission to create customer of the institute!');
-        session()->flash('alert-type', 'warning');
-
-        return redirect(route('institutes.index'));
         
     }
 
@@ -211,11 +246,12 @@ class CustomerController extends Controller
      */
     public function store(CreateCustomerRequest $request)
     {
-        $province = Province::find($request->province)->name;
-        $district = District::find($request->district)->name;
-        $ds_division = DSDivision::find($request->dsdivision)->name;
-        $gn_division = GNDivision::find($request->gndivision)->name;
-
+        foreach(Institute::find($request->institute_id)->staff as $staff){
+            if($staff->user_id == Auth::user()->id){
+                $staffRole = $staff->role;
+            }
+        }
+        
         //Save New Customer Data to DB
         $customer = Customer::create([
             'institute_id' => $request->institute_id,
@@ -226,16 +262,18 @@ class CustomerController extends Controller
             'address' => $request->address,
             'contact_no' => $request->contact_no,
             'email' => $request->email,
-            'province' => $province,
-            'district' => $district,
-            'ds_division' => $ds_division,
-            'gn_division' => $gn_division,
+            'province' => $request->province,
+            'district' => $request->district,
+            'ds_division' => $request->dsdivision,
+            'gn_division' => $request->gndivision,
         ]);
 
         session()->flash('message', 'Customer Data has been added Successfully!');
         session()->flash('alert-type', 'success');
 
-        return view('customers.create')->with('customer_inst', Institute::find($request->institute_id));
+        
+
+        return view('customers.create')->with('customer_inst', Institute::find($request->institute_id))->with('staffRole', $staffRole);
     }
 
     /**
@@ -246,24 +284,36 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
+        
         foreach(Institute::find($customer->institute->id)->staff as $staff){
             if($staff->user_id == Auth::id()){
                 if($staff->status == 1){
-                    
+                    if($staff->role == 'frontdeskuser' || $staff->role == 'manager'){
                     //Return view
-                    return view('customers.index')->with('customer', $customer)->with('institute', $customer->institute)->with('visits', Customer::find($customer->id)->visits()->orderBy('created_at', 'DESC')->get());
-                }else{
-                    session()->flash('message', 'You do not have permission to view the customer details!');
+                    return view('customers.index')->with('customer', $customer)->with('institute', $customer->institute)->with('visits', Customer::find($customer->id)->visits()->orderBy('created_at', 'DESC')->get())->with('staffRole', $staff->role);
+                    }
+                    else{
+                        session()->flash('message', 'You do not have permission to view customers of the institute!');
+                        session()->flash('alert-type', 'warning');
+
+                        return redirect(route('institutes.index'));
+                    }
+                }
+                else{
+                    session()->flash('message', 'You are not active staff of the institute!');
                     session()->flash('alert-type', 'warning');
 
                     return redirect(route('institutes.index'));
                 }
             }
         }
-        session()->flash('message', 'You do not have permission to view the customer details!');
+        session()->flash('message', 'You are not staff of the institute!');
         session()->flash('alert-type', 'warning');
 
         return redirect(route('institutes.index'));
+       
+            
+        
 
     }
 
@@ -275,7 +325,33 @@ class CustomerController extends Controller
      */
     public function edit(Customer $customer)
     {
-        //
+        //Show edit page
+        foreach(Institute::find($customer->institute->id)->staff as $staff){
+            if($staff->user_id == Auth::id()){
+                if($staff->status == 1){
+                    if($staff->role == 'frontdeskuser' || $staff->role == 'manager'){
+                    //Return view
+                    return view('customers.create')->with('customer', $customer)->with('customer_inst', $customer->institute)->with('visits', Customer::find($customer->id)->visits()->orderBy('created_at', 'DESC')->get())->with('staffRole', $staff->role);
+                    }
+                    else{
+                        session()->flash('message', 'You do not have permission to edit customers of the institute!');
+                        session()->flash('alert-type', 'warning');
+
+                        return redirect(route('customers.index'))->with('institute', Institute::find($customer->institute->id))->with('staffRole', $staff->role);
+                    }
+                }
+                else{
+                    session()->flash('message', 'You are not active staff of the institute!');
+                    session()->flash('alert-type', 'warning');
+
+                    return redirect(route('institutes.index'));
+                }
+            }
+        }
+        session()->flash('message', 'You are not staff of the institute!');
+        session()->flash('alert-type', 'warning');
+
+        return redirect(route('institutes.index'));
     }
 
     /**
@@ -287,7 +363,26 @@ class CustomerController extends Controller
      */
     public function update(Request $request, Customer $customer)
     {
-        //
+        //Update Customer Data to DB
+        $customer = Customer::find($customer->id);
+        
+        $customer->first_name = $request->firstname;
+        $customer->last_name = $request->lastname;
+        $customer->gender = $request->gender;
+        $customer->nic_no = $request->nic_no;
+        $customer->address = $request->address;
+        $customer->contact_no = $request->contact_no;
+        $customer->email = $request->email;
+        $customer->province = $request->province;
+        $customer->district = $request->district;
+        $customer->ds_division = $request->ds_division;
+        $customer->gn_division = $request->gn_division;
+        $customer->save();
+
+        session()->flash('message', 'Customer Data has been updated Successfully!');
+        session()->flash('alert-type', 'success');
+
+        return view('customers.create')->with('customer_inst', Institute::find($request->institute_id))->with('visits', Customer::find($customer->id)->visits()->orderBy('created_at', 'DESC')->get())->with('staffRole', $staff->role);;
     }
 
     /**

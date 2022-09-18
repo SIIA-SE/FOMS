@@ -6,6 +6,10 @@ use App\Customer;
 use App\Visit;
 use App\Branch;
 use App\Institute;
+use App\Province;
+use App\District;
+use App\DSDivision;
+use App\GNDivision;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -41,10 +45,10 @@ class CustomerExport implements FromQuery, WithHeadings, WithMapping, WithEvents
             $customer->address,
             $customer->contact_no,
             $customer->email,
-            $customer->province,
-            $customer->district,
-            $customer->ds_division,
-            $customer->gn_division,
+            Province::find($customer->province)->name,
+            District::find($customer->district)->name,
+            DSDivision::find($customer->ds_division)->name,
+            GNDivision::find($customer->gn_division)->name,
         ];
     }
 

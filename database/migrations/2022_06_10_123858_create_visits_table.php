@@ -15,7 +15,7 @@ class CreateVisitsTable extends Migration
     {
         Schema::create('visits', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained('customers');
+            $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade');
             $table->bigInteger('branch_id');
             $table->bigInteger('institute_id');
             $table->string('purpose');

@@ -15,7 +15,7 @@ class CreateDsdivisionsTable extends Migration
     {
         Schema::create('dsdivisions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('district_id')->constrained('districts');
+            $table->foreignId('district_id')->constrained('districts')->onDelete('cascade');
             $table->string('name');
             $table->timestamps();
         });

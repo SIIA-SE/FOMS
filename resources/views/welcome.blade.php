@@ -13,6 +13,7 @@
         <style>
             html, body {
                 background-color: #fff;
+                background-image: url('bg.jpg');
                 color: #636b6f;
                 font-family: 'Nunito', sans-serif;
                 font-weight: 200;
@@ -41,7 +42,11 @@
             }
 
             .content {
-                text-align: center;
+                margin-top: 25%;
+                margin-left: 75%;
+                text-align: right;
+                color: white;
+                font-weight: bold;
             }
 
             .title {
@@ -49,7 +54,7 @@
             }
 
             .links > a {
-                color: #636b6f;
+                color: white;
                 padding: 0 25px;
                 font-size: 13px;
                 font-weight: 600;
@@ -80,9 +85,6 @@
             @endif
 
             <div class="content">
-                <div class="title m-b-md">
-                    Front Office Management System
-                </div>
                 <div style="font-weight:bold">Created By:</div>
                 <div>A.Shanojan (E1841133) <br />Bachelor of Information Technology <br />CODL, University of Moratuwa</div>
                 <!-- <div class="links">

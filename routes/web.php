@@ -30,6 +30,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('visits', 'VisitController');
 
     Route::get('trashed-institutes', 'InstituteController@trashed')->name('trashed-institutes.index');
+    Route::get('restore/{id}', 'InstituteController@restore')->name('restore.index');
     Route::get('join-institute', 'InstituteController@joinInstitute')->name('join-institutes.index');
     Route::get('institutes/{id}/add-staff', 'InstituteController@addStaff')->name('add-staff.index');
 
@@ -48,4 +49,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('institutes/{id}/staff-list', 'InstituteController@addStaff')->name('staff-list.index');
     Route::get('getSStaffList/{institute}/{role}', 'InstituteController@getSStaffList')->name('staff.get');
     Route::get('institutes/{id}/get-data', 'InstituteController@getData')->name('get-data.index');
+    Route::get('branches/displaytoken/{branch}/', 'BranchController@display')->name('display.token');
 });

@@ -15,7 +15,7 @@ class CreateGndivisionsTable extends Migration
     {
         Schema::create('gndivisions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('ds_id')->constrained('dsdivisions');
+            $table->foreignId('ds_id')->constrained('dsdivisions')->onDelete('cascade');
             $table->string('name');
             $table->timestamps();
         });

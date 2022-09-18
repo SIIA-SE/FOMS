@@ -2,49 +2,64 @@
 
 @section('menu')
 <div class="list-group">
-  <a href="{{route('institutes.index')}}" class="list-group-item list-group-item-action"><i class="bi bi-chevron-left"></i>Back</a>
-  <a href="{{route('customers.index', ['id' => $institute->id])}}" class="list-group-item list-group-item-action {{ Route::is('customers.index') ? 'active' : '' }}"><i class="bi bi-person-video2"></i> Customers</a>
+  <a href="{{ route('institutes.index') }}" class="list-group-item list-group-item-action"><i class="bi bi-chevron-left"></i>Back</a>
+  @if($staffRole == 'manager' || $staffRole == 'frontdeskuser')
+  <a href="{{ route('customers.index', ['id' => $institute->id]) }}" class="list-group-item list-group-item-action {{ Route::is('customers.index') ? 'active' : '' }}"><i class="bi bi-person-video2"></i> Customers</a>
+  @endif
   <a href="{{ route('branches.index', ['id' => $institute->id]) }}" class="list-group-item list-group-item-action {{ Route::is('branches.index') ? 'active' : '' }}"><i class="bi bi-diagram-3"></i> Branches</a>
+
 </div>
+
 
 <br />
 
-@foreach(Auth::user()->institutes as $userInstitute)
-  @if($userInstitute->id == $institute->id)
-    <div class="list-group">
-      <a href="{{route('add-staff.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-plus-fill"></i> Staff Requests <span class="badge badge-danger">@if(count(App\Institute::find($institute->id)->staff()->where('status', 2)->get()) > 0) {{ count(App\Institute::find($institute->id)->staff()->where('status', 2)->get()) }} @endif</span></a>
-      <a id="staffList" href="#" class="list-group-item list-group-item-action"><i class="bi bi-person-lines-fill"></i> Staff List</a>
-      <a id="generateReports" href="{{route('get-data.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-arrow-down-square-fill"></i> Download Data</a>
-    </div>
-  @else
-  @continue
+<div class="list-group">
+  @foreach(Auth::user()->institutes as $userInstitute)
+    @if($userInstitute->id == $institute->id || $staffRole == 'manager' || $staffRole == 'sys_admin')
+      
+        <a href="{{route('add-staff.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-plus-fill"></i> Staff Requests <span class="badge badge-danger">@if(count(App\Institute::find($institute->id)->staff()->where('status', 2)->get()) > 0) {{ count(App\Institute::find($institute->id)->staff()->where('status', 2)->get()) }} @endif</span></a>
+        <a id="staffList" href="{{route('staff-list.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-lines-fill"></i> Staff List</a>
+    @endif
+  @endforeach
+  @if($staffRole == 'manager')
+    <a id="generateReports" href="{{route('get-data.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-arrow-down-square-fill"></i> Download Data</a>
   @endif
-@endforeach
+</div>
 
 <br />
 @endsection
 
 @section('content')
-<div class="row border-bottom">
+<div class="row border-bottom border-dark">
   <div class="col-auto"><h4 >{{ $institute->name }}</h4></div>
   <div class="col-auto"><span class="badge badge-secondary">{{ $institute->code }}</span></div>
   <div class="col"><a href="{{route('institutes.index')}}" class="float-right btn btn-sm btn-danger"><i class="bi bi-box-arrow-left"></i> Exit</a></div>
   
 </div>
 <br />
+@if($staffRole == 'manager' || $staffRole == 'sys_admin')
 <div class="d-flex justify-content-end mb-3">
     <a href="#" class="btn btn-success float-right" data-toggle="modal" data-target="#addBranch"><i class="bi bi-plus-circle"></i> Add New Branch</a>
 </div>
+@endif
 <br />
 @foreach($institute->branches as $branch)
- <div class="d-inline-block mt-4 mr-2 card border-dark" style="width: auto;">
-  <div class="card-body">
-      <h5 class="card-title">{{ $branch->name }}</h5>
-      <p class="card-text">Branch Head: {{ $branch->branch_head }}</p>
-      <a href="{{ route('branches.show', $branch->id) }}" class="btn btn-sm btn-info mr-2"><i class="bi bi-people"></i> View Queue</a>
-      <button type="button" id="addVisitButton" href="#" class="btn btn-sm btn-success mr-1" data-toggle="modal" data-target="#addVisit" data-target-id="{{$branch->id}}"><i class="bi bi-person-video2"></i> Create Visit</button>
-  </div>
-</div>
+  @foreach(Auth::user()->staff->where('institute_id', $institute->id) as $userStaff)
+    @if($userStaff->branch_id == $branch->id || $staffRole == 'manager' || $staffRole == 'sys_admin' || $staffRole == 'frontdeskuser')
+      <div class="d-inline-block mt-4 mr-2 card border-dark" style="width: auto;">
+        <div class="card-body">
+            <h5 class="card-title">{{ $branch->name }}</h5>
+            <p class="card-text">Branch Head: {{ $branch->branch_head }}</p>
+            @if($userStaff->branch_id == $branch->id || $staffRole == 'manager' || $staffRole == 'frontdeskuser')
+            <a href="{{ route('branches.show', $branch->id) }}" class="btn btn-sm btn-info mr-2"><i class="bi bi-people"></i> View Queue</a>
+            @endif
+            @if($staffRole == 'frontdeskuser')
+            <button type="button" id="addVisitButton" href="#" class="btn btn-sm btn-success mr-1" data-toggle="modal" data-target="#addVisit" data-target-id="{{$branch->id}}"><i class="bi bi-person-video2"></i> Create Visit</button>
+            @endif
+        </div>
+      </div>
+    @endif
+  @endforeach
 @endforeach
 <form action="{{ route('branches.store', ['institute_id' => $institute->id]) }}" method="POST" id="addBranchForm">
   @csrf

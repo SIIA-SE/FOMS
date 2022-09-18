@@ -2,30 +2,34 @@
 
 @section('menu')
 <div class="list-group">
-<a href="{{route('customers.index', ['id' => $customer_inst->id])}}" class="list-group-item list-group-item-action"><i class="bi bi-chevron-left"></i>Back</a>
-  <a href="{{route('customers.index', ['id' => $customer_inst->id])}}" class="list-group-item list-group-item-action {{ Route::is('customers.create') ? 'active' : '' }}"><i class="bi bi-person-video2"></i> Customers</a>
+  <a href="{{ route('customers.index', ['id' => $customer_inst->id]) }}" class="list-group-item list-group-item-action"><i class="bi bi-chevron-left"></i>Back</a>
+  @if($staffRole == 'manager' || $staffRole == 'frontdeskuser')
+  <a href="{{ route('customers.index', ['id' => $customer_inst->id]) }}" class="list-group-item list-group-item-action {{ Route::is('customers.index') ? 'active' : '' }}"><i class="bi bi-person-video2"></i> Customers</a>
+  @endif
   <a href="{{ route('branches.index', ['id' => $customer_inst->id]) }}" class="list-group-item list-group-item-action {{ Route::is('branches.index') ? 'active' : '' }}"><i class="bi bi-diagram-3"></i> Branches</a>
+
 </div>
 
 <br />
 
-@foreach(Auth::user()->institutes as $userInstitute)
-  @if($userInstitute->id == $customer_inst->id)
-    <div class="list-group">
-      <a href="{{route('add-staff.index', $customer_inst->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-plus-fill"></i> Staff Requests <span class="badge badge-danger">@if(count(App\Institute::find($customer_inst->id)->staff()->where('status', 2)->get()) > 0) {{ count(App\Institute::find($customer_inst->id)->staff()->where('status', 2)->get()) }} @endif</span></a>
-      <a id="staffList" href="{{route('staff-list.index', $customer_inst->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-lines-fill"></i> Staff List</a>
-      <a id="generateReports" href="{{route('get-data.index', $customer_inst->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-arrow-down-square-fill"></i> Download Data</a>
-    </div>
-  @else
-  @continue
+<div class="list-group">
+  @foreach(Auth::user()->institutes as $userInstitute)
+    @if($userInstitute->id == $institute->id || $staffRole == 'manager' || $staffRole == 'sys_admin')
+      
+        <a href="{{route('add-staff.index', $customer_inst->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-plus-fill"></i> Staff Requests <span class="badge badge-danger">@if(count(App\Institute::find($institute->id)->staff()->where('status', 2)->get()) > 0) {{ count(App\Institute::find($institute->id)->staff()->where('status', 2)->get()) }} @endif</span></a>
+        <a id="staffList" href="{{route('staff-list.index', $customer_inst->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-lines-fill"></i> Staff List</a>
+    @endif
+  @endforeach
+  @if($staffRole == 'manager')
+    <a id="generateReports" href="{{route('get-data.index', $customer_inst->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-arrow-down-square-fill"></i> Download Data</a>
   @endif
-@endforeach
+</div>
 
 <br />
 @endsection
 
 @section('content')
-<div class="row border-bottom">
+<div class="row border-bottom border-dark">
   <div class="col-auto"><h4 >{{ $customer_inst->name }}</h4></div>
   <div class="col-auto"><span class="badge badge-secondary">{{ $customer_inst->code }}</span></div>
   <div class="col"><a href="{{route('institutes.index')}}" class="float-right btn btn-sm btn-danger"><i class="bi bi-box-arrow-left"></i> Exit</a></div>
@@ -236,7 +240,7 @@
             </div>
             
             <p></p>
-            <div class="form-group">
+            <div class="buttons form-group">
                 <a class="btn btn-dark mr-1" href="{{route('customers.index', ['id' => $customer_inst->id])}}"><i class="bi bi-chevron-left"></i>Go back</a>
                 <button id="saveButton" class="btn btn-success mr-1"><i class="bi bi-plus-circle"></i> {{ isset($customer) ? 'Update Details' : 'Save Data'}}</button>
                 <button type="button" id="addVisitButton" href="#" class="btn btn-primary mr-1" data-toggle="modal" data-target="#addVisit" disabled><i class="bi bi-person-plus"></i> Create Visit</button>
@@ -420,6 +424,8 @@
                             jQuery('#saveButton').attr('disabled', true);
                             jQuery("#addVisitLabel").append(data[0].first_name);
                             jQuery("#custId").val(data[0].id);
+                            jQuery(".buttons").append('<a id="editCustomerButton" href="/customers/' + data[0].id + '/edit" class="btn btn-info mr-1"><i class="bi bi-pencil-square"></i> Edit Details</a>');
+
 
                             jQuery.ajax({
                             url : "{{url('/getDistrictsList')}}?province_id=" + data[0].province,
@@ -511,6 +517,7 @@
                             jQuery('#saveButton').attr('disabled', false);
                             jQuery("#custId").val('');
                             jQuery('#visitCard').remove();
+                            jQuery("#editCustomerButton").remove();
                         }
                     }
                 });

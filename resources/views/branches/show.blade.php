@@ -2,30 +2,45 @@
 
 @section('menu')
 <div class="list-group">
-  <a href="{{route('branches.index', ['id' => $institute->id])}}" class="list-group-item list-group-item-action"><i class="bi bi-chevron-left"></i>Back</a>
-  <a href="{{route('customers.index', ['id' => $institute->id])}}" class="list-group-item list-group-item-action {{ Route::is('customers.index') ? 'active' : '' }}"><i class="bi bi-person-video2"></i> Customers</a>
-  <a href="{{ route('branches.index', ['id' => $institute->id]) }}" class="list-group-item list-group-item-action {{ Route::is('branches.show') ? 'active' : '' }}"><i class="bi bi-diagram-3"></i> Branches</a>
+  <a href="{{ route('branches.index', ['id' => $institute->id]) }}" class="list-group-item list-group-item-action"><i class="bi bi-chevron-left"></i>Back</a>
+  @if($staffRole == 'manager' || $staffRole == 'frontdeskuser')
+  <a href="{{ route('customers.index', ['id' => $institute->id]) }}" class="list-group-item list-group-item-action {{ Route::is('customers.index') ? 'active' : '' }}"><i class="bi bi-person-video2"></i> Customers</a>
+  @endif
+  <a href="{{ route('branches.index', ['id' => $institute->id]) }}" class="list-group-item list-group-item-action {{ Route::is('branches.index') ? 'active' : '' }}"><i class="bi bi-diagram-3"></i> Branches</a>
+
 </div>
 
 <br />
 
-@foreach(Auth::user()->institutes as $userInstitute)
-  @if($userInstitute->id == $institute->id)
+<div class="list-group">
+  @foreach(Auth::user()->institutes as $userInstitute)
+    @if($userInstitute->id == $institute->id || $staffRole == 'manager' || $staffRole == 'sys_admin')
+        <a href="{{route('add-staff.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-plus-fill"></i> Staff Requests <span class="badge badge-danger">@if(count(App\Institute::find($institute->id)->staff()->where('status', 2)->get()) > 0) {{ count(App\Institute::find($institute->id)->staff()->where('status', 2)->get()) }} @endif</span></a>
+        <a id="staffList" href="{{route('staff-list.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-lines-fill"></i> Staff List</a>
+    @endif
+  @endforeach
+  @if($staffRole == 'manager')
+    <a id="generateReports" href="{{route('get-data.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-arrow-down-square-fill"></i> Download Data</a>
+  @endif
+</div>
+<br />
+
+@foreach(Auth::user()->staff->where('institute_id', $institute->id) as $userStaff)
+  @if($userStaff->branch_id == $branch->id || $staffRole == 'manager')
     <div class="list-group">
-      <a href="{{route('add-staff.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-plus-fill"></i> Staff Requests <span class="badge badge-danger">@if(count(App\Institute::find($institute->id)->staff()->where('status', 2)->get()) > 0) {{ count(App\Institute::find($institute->id)->staff()->where('status', 2)->get()) }} @endif</span></a>
-      <a id="staffList" href="{{route('staff-list.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-lines-fill"></i> Staff List</a>
-      <a id="generateReports" href="{{route('get-data.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-arrow-down-square-fill"></i> Download Data</a>
+      <a id="serve_list" href="#" class="list-group-item list-group-item-action"><i class="bi bi-stickies-fill"></i> Serving List</a>
     </div>
-  @else
-  @continue
   @endif
 @endforeach
 
-<br />
+<div class="list-group">
+  <a id="displayToken" href="{{route('display.token', $branch->id)}}" target="popup" onclick="window.open('{{route('display.token', $branch->id)}}','name','width=720,height=480')" class="list-group-item list-group-item-action"><i class="bi bi-display-fill"></i> Token Display <i class="bi bi-arrow-up-right-square-fill"></i></a>
+</div>
+
 @endsection
 
 @section('content')
-<div class="row border-bottom">
+<div class="row border-bottom border-dark">
   <div class="col-auto"><h4 >{{ $institute->name }}</h4></div>
   <div class="col-auto"><span class="badge badge-secondary">{{ $institute->code }}</span></div>
   <div class="col"><a href="{{route('institutes.index')}}" class="float-right btn btn-sm btn-danger"><i class="bi bi-box-arrow-left"></i> Exit</a></div>
@@ -226,7 +241,17 @@
       jQuery(".token_no").append(token_no);
       jQuery("#visitId").empty();
       jQuery("#visitId").val(visit_id);
+
+      jQuery.ajax({
+        url : "{{ url('/branches/displaytoken') }}" + "/" + "{{ $branch->id }}" + "/?token=" + token_no,
+        type : "GET",
+        dataType : "json",
+        success:function(data){   
+          console.log(data);
+        }
       
+      });
+
     });
 
     $("#completeService").on("show.bs.modal", function (e) {

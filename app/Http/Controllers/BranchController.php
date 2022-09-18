@@ -18,26 +18,34 @@ class BranchController extends Controller
      */
     public function index(Request $request)
     {
-        $institute = Institute::find($request->id);
+        if($institute = Institute::find($request->id)){
         
-        foreach($institute->staff as $staff){
-            if($staff->user_id == Auth::id()){
-                if($staff->status == 1){
-                    //Return page
-                    return view('branches.index')->with('institute', Institute::find($request->id));
-                }else{
-                    session()->flash('message', 'You do not have permission to view branches of the institute!');
-                    session()->flash('alert-type', 'warning');
+            foreach($institute->staff as $staff){
+                if($staff->user_id == Auth::id()){
+                    if($staff->status == 1){
+                        //Return page
+                        return view('branches.index')->with('institute', Institute::find($request->id))->with('staffRole', $staff->role);
+                    }else{
+                        session()->flash('message', 'You are not active staff of the institute!');
+                        session()->flash('alert-type', 'warning');
 
-                    return redirect(route('institutes.index'));
+                        return redirect(route('institutes.index'));
+                    }
                 }
             }
-        }
-        
-        session()->flash('message', 'You do not have permission to view branches of the institute!');
-        session()->flash('alert-type', 'warning');
+            
+            session()->flash('message', 'You are not staff of the institute!');
+            session()->flash('alert-type', 'warning');
 
-        return redirect(route('institutes.index'));
+            return redirect(route('institutes.index'));
+        
+            
+        }else{
+            session()->flash('message', 'Requested Institute is not available!');
+            session()->flash('alert-type', 'danger');
+
+            return redirect(route('institutes.index'));
+        }
     }
 
     /**
@@ -68,7 +76,15 @@ class BranchController extends Controller
         session()->flash('message', 'Branch has been created Successfully!');
         session()->flash('alert-type', 'success');
 
-        return view('branches.index')->with('institute', Institute::find($request->institute_id));
+        if($institute = Institute::find($request->institute_id)){
+            foreach($institute->staff as $staff){
+                if($staff->user_id == Auth::id()){
+                    if($staff->status == 1){
+                        return view('branches.index')->with('institute', Institute::find($request->institute_id))->with('staffRole', $staff->role);
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -79,28 +95,47 @@ class BranchController extends Controller
      */
     public function show(Request $request)
     {
-        $branch = Branch::find($request->branch);
-        $institute = Institute::find($branch->institute->id);
+        if($branch = Branch::find($request->branch)){
+            
+            $institute = Institute::find($branch->institute->id);
 
+            foreach($institute->staff as $staff){
+                if($staff->user_id == Auth::user()->id){
+                    if($staff->status == 1){
+                        //Return show page
+                        if($staff->role == 'user'){
+                            if($staff->branch_id == $branch->id){
+                                $queue = Institute::find($branch->institute_id)->visits()->where('branch_id', $branch->id)->where('status', 'IN QUEUE')->orderBy('created_at', 'desc')->get();
+                                return view('branches.show')->with('institute', $branch->institute)->with('branch', $branch)->with('queue', $queue)->with('staffRole', $staff->role);
+                            }else{
+                                session()->flash('message', 'You do not have permission to view this branch of the institute!');
+                                session()->flash('alert-type', 'warning');
 
-        foreach($institute->staff as $staff){
-            if($staff->user_id == Auth::user()->id){
-                if($staff->status == 1){
-                    //Return show page
-                    $queue = Institute::find($branch->institute_id)->visits()->where('branch_id', $branch->id)->where('status', 'IN QUEUE')->orderBy('created_at', 'desc')->get();
-                    return view('branches.show')->with('institute', $branch->institute)->with('branch', $branch)->with('queue', $queue);
-                }else {
-                    session()->flash('message', 'You do not have permission to view branch of the institute!');
-                    session()->flash('alert-type', 'warning');
+                                return redirect(route('branches.index'))->with('staffRole', $staff->role);
+                            }
+                        }else{
+                            $queue = Institute::find($branch->institute_id)->visits()->where('branch_id', $branch->id)->where('status', 'IN QUEUE')->orderBy('created_at', 'desc')->get();
+                            return view('branches.show')->with('institute', $branch->institute)->with('branch', $branch)->with('queue', $queue)->with('staffRole', $staff->role);
+                        }
+                        
+                    }else {
+                        session()->flash('message', 'You are not active staff of the institute!');
+                        session()->flash('alert-type', 'warning');
 
-                    return redirect(route('institutes.index'));
+                        return redirect(route('institutes.index'));
+                    }
                 }
             }
-        }
-        session()->flash('message', 'You do not have permission to view branch of the institute!');
-        session()->flash('alert-type', 'warning');
+            session()->flash('message', 'You are not staff of the institute!');
+            session()->flash('alert-type', 'warning');
 
-        return redirect(route('institutes.index'));
+            return redirect(route('institutes.index'));
+        }else{
+            session()->flash('message', 'Requested branch is not avaialble!');
+            session()->flash('alert-type', 'warning');
+
+            return redirect(route('institutes.index'));
+        }
         
     }
 
@@ -142,6 +177,18 @@ class BranchController extends Controller
 
             return json_encode($data);
         }
+    }
+
+    function display(Request $request)
+    {
+        if ($request->ajax()) {
+            $branch = Branch::find($request->branch);
+            $branch->display = $request->token;
+            $branch->save();
+        }
+
+        return view('branches.display')->with('branch', Branch::find($request->branch));
+
     }
 
     /**

@@ -109,8 +109,9 @@ class InstituteController extends Controller
                         session()->flash('message', 'Your request to join the institute is pending..!');
                         session()->flash('alert-type', 'warning');
                         return redirect(route('institutes.index'));
+
                     }elseif($staff->status == "1"){
-                        return view('institutes.show')->with('institute', $institute);
+                        return view('institutes.show')->with('institute', $institute)->with('staffRole', $staff->role);
                     }
                     
                 }
@@ -222,15 +223,38 @@ class InstituteController extends Controller
 
             $institute->forceDelete();
 
+            session()->flash('message', 'Institute has been deleted successfully!');
+            session()->flash('alert-type', 'success');
+
         }else{
 
             $institute->delete();
 
+            session()->flash('message', 'Institute has been trashed successfully!');
+            session()->flash('alert-type', 'success');
+
         }
 
-        session()->flash('success', 'Institute has been deleted Successfully!');
+        
 
         return redirect(route('institutes.index'));
+    }
+
+    public function restore($id)
+    {
+        $institute = Institute::withTrashed()->where('id', $id)->firstOrFail();
+
+        if($institute->trashed()){
+
+            $institute->restore();
+
+            session()->flash('message', 'Institute has been restored successfully!');
+            session()->flash('alert-type', 'success');
+
+            return redirect(route('institutes.index'));
+
+        }
+
     }
 
         /**
@@ -353,7 +377,7 @@ class InstituteController extends Controller
             foreach($institute->staff as $staff){
                 if($staff->user_id == Auth::id()){
                     if($staff->status == 1){
-                        return view('institutes.show')->with('institute', $institute);
+                        return view('institutes.show')->with('institute', $institute)->with('staffRole', $staff->role);
                     }else{
                         session()->flash('message', 'You do not have permission to view staff requests of the institute!');
                         session()->flash('alert-type', 'warning');
@@ -414,7 +438,7 @@ class InstituteController extends Controller
             foreach($institute->staff as $staff){
                 if($staff->user_id == Auth::id()){
                     if($staff->status == 1){
-                        return view('institutes.show')->with('institute', $institute);
+                        return view('institutes.show')->with('institute', $institute)->with('staffRole', $staff->role);
                     }else{
                         session()->flash('message', 'You are not active staff of the institute!');
                         session()->flash('alert-type', 'warning');

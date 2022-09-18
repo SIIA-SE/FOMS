@@ -16,7 +16,7 @@
                 <div class="card-header">{{ __('Dashboard') }}</div>
 
                 <div class="card-body">
-                    <a href="#" class="btn btn-primary">Enter Institute</a>
+                    <a href="{{route('institutes.index')}}" class="btn btn-primary">View Institutes</a>
                 </div>
             </div>
         </div>

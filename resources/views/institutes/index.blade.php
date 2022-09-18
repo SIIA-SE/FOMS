@@ -121,7 +121,7 @@
           </button>
         </h2>
       </div>
-      <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+      <div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordionExample">
         <div class="card-body">
           @forelse($trashedInstitutes as $institute)
               <div class="d-inline-block mt-4 mr-4 card" style="width: 18rem;">
@@ -129,7 +129,8 @@
                   <div class="card-body">
                       <h5 class="card-title">{{$institute->name}}</h5>
                       <p class="card-text">Institute Code: {{$institute->code}}</p>
-                      <a href="#" class="btn btn-danger btn-sm" onclick="handleDelete({{ $institute->id }})">{{ $institute->trashed() ? 'Delete': 'Trash' }}</a>
+                      <a href="#" class="btn btn-danger btn-sm" onclick="handleDelete({{ $institute->id }})"><i class="bi bi-trash-fill"></i> {{ $institute->trashed() ? 'Delete': 'Trash' }}</a>
+                      <a href="#" class="btn btn-primary btn-sm" onclick="handleRestore({{ $institute->id }})"><i class="bi bi-arrow-counterclockwise"></i> {{ $institute->trashed() ? 'Restore': 'Trash' }}</a>
                   </div>
               </div>
           @empty
@@ -145,45 +146,74 @@
 </div>
 
 
-
 <form action="" method="POST" id="deleteInstituteForm">
-    @csrf
-    @method('DELETE')
-    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Delete Institute</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p class="text-center font-weight-bold">
-                        This will trash the selected item, Do you want to continue?
-                    </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No, Go back</button>
-                    <button type="submit" class="btn btn-danger">Yes, Delete</button>
-                </div>
-            </div>
-        </div>
-    </div>
+  @csrf
+  @method('DELETE')
+  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Delete Institute</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                  <p class="text-center font-weight-bold">
+                      This will trash the selected item, Do you want to continue?
+                  </p>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">No, Go back</button>
+                  <button type="submit" class="btn btn-danger">Yes, Delete</button>
+              </div>
+          </div>
+      </div>
+  </div>
+</form>
+
+<form action="" method="GET" id="restoreInstituteForm">
+  @csrf
+  <div class="modal fade" id="restoreModal" tabindex="-1" role="dialog" aria-labelledby="restoreModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="restoreModalLabel">Restore Institute</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body">
+                  <p class="text-center font-weight-bold">
+                      This will restore the selected institute, Do you want to continue?
+                  </p>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">No, Go back</button>
+                  <button type="submit" class="btn btn-primary">Yes, Restore</button>
+              </div>
+          </div>
+      </div>
+  </div>
 </form>
 
 @endsection
 
 @section('scripts')
 
-    <script>
-        function handleDelete(id) {
+<script>
+  function handleDelete(id) {
+    var form = document.getElementById('deleteInstituteForm')
+    form.action = '/institutes/' + id
+    $('#deleteModal').modal('show')
 
-            var form = document.getElementById('deleteInstituteForm')
-            form.action = '/institutes/' + id
-            $('#deleteModal').modal('show')
+  }
+  function handleRestore(id) {
+    var form = document.getElementById('restoreInstituteForm')
+    form.action = '/restore/' + id
+    $('#restoreModal').modal('show')
 
-        }
-    </script>
+  }
+</script>
 
 @endsection

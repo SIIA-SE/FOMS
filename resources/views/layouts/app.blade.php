@@ -45,7 +45,7 @@
 
     <style>
         body {
-            /*background-image: url( {{ asset('background-g3fd207f8b_1920.jpg') }} );*/
+            background-image: radial-gradient(circle, #ffffff, #e8e8e8, #d1d1d1, #bababa, #a4a4a4);
         }
     </style>
 

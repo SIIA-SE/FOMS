@@ -2,30 +2,32 @@
 
 @section('menu')
 <div class="list-group">
-  <a href="{{route('institutes.show', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-chevron-left"></i>Back</a>
-  <a href="{{route('customers.index', ['id' => $institute->id])}}" class="list-group-item list-group-item-action {{ Route::is('customers.index') ? 'active' : '' }}"><i class="bi bi-person-video2"></i> Customers</a>
+  <a href="{{ route('institutes.index') }}" class="list-group-item list-group-item-action"><i class="bi bi-chevron-left"></i>Back</a>
+  @if($staffRole == 'manager' || $staffRole == 'frontdeskuser')
+  <a href="{{ route('customers.index', ['id' => $institute->id]) }}" class="list-group-item list-group-item-action {{ Route::is('customers.index') ? 'active' : '' }}"><i class="bi bi-person-video2"></i> Customers</a>
+  @endif
   <a href="{{ route('branches.index', ['id' => $institute->id]) }}" class="list-group-item list-group-item-action {{ Route::is('branches.index') ? 'active' : '' }}"><i class="bi bi-diagram-3"></i> Branches</a>
 </div>
 
 <br />
 
-@foreach(Auth::user()->institutes as $userInstitute)
-  @if($userInstitute->id == $institute->id)
-    <div class="list-group">
-      <a href="{{route('add-staff.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-plus-fill"></i> Staff Requests <span class="badge badge-danger">@if(count(App\Institute::find($institute->id)->staff()->where('status', 2)->get()) > 0) {{ count(App\Institute::find($institute->id)->staff()->where('status', 2)->get()) }} @endif</span></a>
-      <a id="staffList" href="{{route('staff-list.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-lines-fill"></i> Staff List</a>
-      <a id="generateReports" href="{{route('get-data.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-arrow-down-square-fill"></i> Download Data</a>
-    </div>
-  @else
-  @continue
+<div class="list-group">
+  @foreach(Auth::user()->institutes as $userInstitute)
+    @if($userInstitute->id == $institute->id || $staffRole == 'manager' || $staffRole == 'sys_admin')
+        <a href="{{route('add-staff.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-plus-fill"></i> Staff Requests <span class="badge badge-danger">@if(count(App\Institute::find($institute->id)->staff()->where('status', 2)->get()) > 0) {{ count(App\Institute::find($institute->id)->staff()->where('status', 2)->get()) }} @endif</span></a>
+        <a id="staffList" href="{{route('staff-list.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-person-lines-fill"></i> Staff List</a>
+    @endif
+  @endforeach
+  @if($staffRole == 'manager')
+    <a id="generateReports" href="{{route('get-data.index', $institute->id)}}" class="list-group-item list-group-item-action"><i class="bi bi-arrow-down-square-fill"></i> Download Data</a>
   @endif
-@endforeach
+</div>
 
 <br />
 @endsection
 
 @section('content')
-<div class="row border-bottom">
+<div class="row border-bottom border-dark">
   <div class="col-auto"><h4 >{{ $institute->name }}</h4></div>
   <div class="col-auto"><span class="badge badge-secondary">{{ $institute->code }}</span></div>
   <div class="col"><a href="{{route('institutes.index')}}" class="float-right btn btn-sm btn-danger"><i class="bi bi-box-arrow-left"></i> Exit</a></div>
@@ -72,10 +74,10 @@
                     <tr>
                     <th scope="row">Address:</th>
                     <td>{{ $customer->address }}, 
-                        {{ $customer->gn_division }}, 
-                        {{ $customer->ds_division }}, 
-                        {{ $customer->district }}, 
-                        {{ $customer->province }} Province</td>
+                        {{ \App\GNDivision::find($customer->gn_division)->name }}, 
+                        {{ \App\DSDivision::find($customer->ds_division)->name }}, 
+                        {{ \App\District::find($customer->district)->name }}, 
+                        {{ \App\Province::find($customer->province)->name }} Province</td>
                     </tr>
                     <tr>
                     <th scope="row" class="col-md-2">Contact No:</th>
@@ -89,6 +91,7 @@
             </table>
             <button type="button" id="addVisitButton" href="#" class="btn btn-primary mr-1" data-toggle="modal" data-target="#addVisit"><i class="bi bi-person-plus"></i> Create Visit</button>
             <button type="button" id="previousVisitsButton" href="#" class="btn btn-warning mr-1" data-toggle="modal" data-target="#previousVisits"><i class="bi bi-calendar4-week"></i> Previous Visits</button>
+            <a id="editCustomerButton" href="{{route('customers.edit', $customer->id)}}" class="btn btn-info mr-1"><i class="bi bi-pencil-square"></i> Edit Details</a>
         </div>
     </div>
 @endif
