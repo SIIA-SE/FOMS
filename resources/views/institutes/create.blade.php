@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('menu')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.6/cropper.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.6/cropper.js"></script>
+
 <div class="list-group">
   <a href="@if(Route::is('institutes.index')) {{route('home')}} @elseif(Route::is('trashed-institutes.index')) {{route('institutes.index')}} @else {{route('institutes.index')}} @endif" class="list-group-item list-group-item-action {{ Route::is('home') ? 'active' : '' }}"><i class="bi bi-chevron-left"></i>Back</a>
 </div>
@@ -70,6 +73,11 @@
                 <label for="image">Institute Header Image</label>
                 <input type="file" class="form-control" name="image" value="{{ isset($institute) ? $institute->image : ''}}">
                 <p class="text-sm-left">Image dimensions must be 1024 x 256 pixels</p>
+                @error('image')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+                @enderror
             </div>
             
             <div class="form-group">

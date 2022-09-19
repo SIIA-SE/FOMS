@@ -54,7 +54,7 @@
         <div class="card-body">
           @forelse($userInstitutes as $institute)
               <div class="d-inline-block mt-4 mr-4 card" style="width: 18rem;">
-                  <img class="card-img-top" src="{{asset('/storage/' . $institute->image)}}" alt="{{$institute->name}}">
+                  <img class="card-img-top" src="{{ Storage::url($institute->image) }}" alt="{{$institute->name}}">
                   <div class="card-body">
                       <h5 class="card-title">{{$institute->name}}</h5>
                       <p class="card-text">Institute Code: {{$institute->code}}</p>
@@ -89,7 +89,7 @@
             @forelse($joinedInstitutes as $Joinedinstitute)
               @if(!App\Institute::withTrashed()->find($Joinedinstitute->institute_id)->trashed())
                   <div class="d-inline-block mt-4 mr-4 card" style="width: 18rem;">
-                    <img class="card-img-top" src="{{asset('/storage/' . App\Institute::find($Joinedinstitute->institute_id)->image)}}" alt="{{App\Institute::find($Joinedinstitute->institute_id)->name}}">
+                    <img class="card-img-top" src="{{ Storage::url(\App\Institute::find($Joinedinstitute->institute_id)->image) }}" alt="{{ \App\Institute::find($Joinedinstitute->institute_id)->name}}">
                     <div class="card-body">
                       <h5 class="card-title">{{App\Institute::find($Joinedinstitute->institute_id)->name}}</h5>
                       <p class="card-text">Institute Code: {{App\Institute::find($Joinedinstitute->institute_id)->code}}</p>

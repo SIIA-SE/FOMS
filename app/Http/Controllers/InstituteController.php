@@ -62,7 +62,16 @@ class InstituteController extends Controller
         if ($request->hasFile('image')) {
             if($request->file('image')->isValid()){
             
-                $image = $request->image->store('institutes');
+                // Get file name with extension
+                $filenameWithExt = $request->image->path();
+                // Get filename only
+                //$filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+                //Get extension only
+                $extension = $request->image->extension();
+                //Filename to store
+                $fileNameToStore = time() . date('Ymd') . '.' . $extension;
+                //UploadFile
+                $image = $request->image->storeAs('public/institutes', $fileNameToStore);
             }
         }
         else {
@@ -188,7 +197,16 @@ class InstituteController extends Controller
             
 
                 
-                $image = $request->image->store('institutes');
+                // Get file name with extension
+                $filenameWithExt = $request->image->path();
+                // Get filename only
+                //$filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+                //Get extension only
+                $extension = $request->image->extension();
+                //Filename to store
+                $fileNameToStore = time() . date('Ymd') . '.' . $extension;
+                //UploadFile
+                $image = $request->image->storeAs('public/institutes', $fileNameToStore);
 
             }
         }
