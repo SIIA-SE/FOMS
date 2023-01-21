@@ -58,7 +58,7 @@
         <form action="{{ isset($customer) ? route('customers.update', $customer->id) : route('customers.store', ['institute_id' => $customer_inst->id]) }}" method="POST" enctype="multipart/form-data">
             @csrf 
             
-            @if(isset($institute))
+            @if(isset($customer))
                 @method('PUT')
             @endif
 
@@ -103,9 +103,9 @@
                         <label for="gender">Gender</label>
                         <select class="form-control @error('gender') is-invalid @enderror" name="gender" value="{{ isset($customer) ? $customer->gender : old('gender') }}">
                         <option selected disabled>Select...</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
+                        <option value="Male" @if($customer->gender == 'Male') selected @endif>Male</option>
+                        <option value="Female" @if($customer->gender == 'Female') selected @endif>Female</option>
+                        <option value="Other" @if($customer->gender == 'Other') selected @endif>Other</option>
                         </select>
                         @error('gender')
                             <span class="invalid-feedback" role="alert">
@@ -160,9 +160,9 @@
                     <div class="form-group">
                         <label for="province">Province</label>
                         <select class="form-control @error('province') is-invalid @enderror" name="province" id="province" value="{{ isset($customer) ? $customer->province : ''}}">
-                            <option @if(old('province')=='') selected disabled @endif>Select...</option>
+                            <option @if(old('province')=='') disabled @endif>Select...</option>
                             @foreach(App\Province::all() as $province)
-                                <option value="{{$province->id}}" {{ old('province') == $province->id ? "selected" : ""}}>{{$province->name}}</option>
+                                <option value="{{$province->id}}" @if(old('province') == $province->id) || ($province->id == $customer->province)  selected @endif> {{$province->name}}</option>
                             @endforeach
                         </select>
                         @error('province')
@@ -176,14 +176,15 @@
                     <div class="form-group">
                         <label for="district">District</label>
                         <select class="form-control @error('district') is-invalid @enderror" name="district" id="district" value="{{ isset($customer) ? $customer->district : ''}}">
+                        <option @if(old('district')=='') disabled @endif>Select...</option>
                         @if(old('district'))
                                 @php
                                     $district = \App\District::find(old('district'));
                                 @endphp
                                 <option value="{{ old('district') }}" selected>{{ $district->name}}</option>
                             @else
-                                <option value="" selected disabled>Select...</option>
-                            @endif
+                                <option value="{{ $customer->district }}" selected>{{ \App\District::find($customer->district)->name }}</option>
+                            @endif 
                         
                         
                         </select>
@@ -204,7 +205,7 @@
                                 @endphp
                                 <option value="{{ old('dsdivision') }}" selected>{{ $dsdivision->name}}</option>
                             @else
-                                <option value="" selected disabled>Select...</option>
+                                <option value="{{ $customer->ds_division }}" selected>{{ \App\DSDivision::find($customer->ds_division)->name }}</option>
                             @endif
                         
                         </select>
@@ -225,7 +226,7 @@
                                 @endphp
                                 <option value="{{ old('gndivision') }}" selected>{{ $gndivision->name}}</option>
                             @else
-                                <option value="" selected disabled>Select...</option>
+                                <option value="{{ $customer->gn_division }}" selected>{{ \App\GNDivision::find($customer->gn_division)->name }}</option>
                             @endif
                         
                         

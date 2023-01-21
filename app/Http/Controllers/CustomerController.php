@@ -363,26 +363,55 @@ class CustomerController extends Controller
      */
     public function update(Request $request, Customer $customer)
     {
-        //Update Customer Data to DB
-        $customer = Customer::find($customer->id);
+
+        foreach(Institute::find($customer->institute->id)->staff as $staff){
+            if($staff->user_id == Auth::id()){
+                if($staff->status == 1){
+                    if($staff->role == 'frontdeskuser' || $staff->role == 'manager'){
+
+                        //Update Customer Data to DB
+                        $customer = Customer::find($customer->id);
         
-        $customer->first_name = $request->firstname;
-        $customer->last_name = $request->lastname;
-        $customer->gender = $request->gender;
-        $customer->nic_no = $request->nic_no;
-        $customer->address = $request->address;
-        $customer->contact_no = $request->contact_no;
-        $customer->email = $request->email;
-        $customer->province = $request->province;
-        $customer->district = $request->district;
-        $customer->ds_division = $request->ds_division;
-        $customer->gn_division = $request->gn_division;
-        $customer->save();
+                        $customer->first_name = $request->firstname;
+                        $customer->last_name = $request->lastname;
+                        $customer->gender = $request->gender;
+                        $customer->nic_no = $request->nic_no;
+                        $customer->address = $request->address;
+                        $customer->contact_no = $request->contact_no;
+                        $customer->email = $request->email;
+                        $customer->province = $request->province;
+                        $customer->district = $request->district;
+                        $customer->ds_division = $request->dsdivision;
+                        $customer->gn_division = $request->gndivision;
+                        $customer->save();
 
-        session()->flash('message', 'Customer Data has been updated Successfully!');
-        session()->flash('alert-type', 'success');
+                        session()->flash('message', 'Customer Data has been updated Successfully!');
+                        session()->flash('alert-type', 'success');
 
-        return view('customers.create')->with('customer_inst', Institute::find($request->institute_id))->with('visits', Customer::find($customer->id)->visits()->orderBy('created_at', 'DESC')->get())->with('staffRole', $staff->role);;
+                        return view('customers.create')->with('customer', $customer)->with('customer_inst', Institute::find($customer->institute->id))->with('visits', Customer::find($customer->id)->visits()->orderBy('created_at', 'DESC')->get())->with('staffRole', $staff->role);
+                    }
+                    else{
+                        session()->flash('message', 'You do not have permission to update customers of the institute!');
+                        session()->flash('alert-type', 'warning');
+
+                        return redirect(route('customers.index'))->with('institute', Institute::find($customer->institute->id))->with('staffRole', $staff->role);
+                    }
+                }
+                else{
+                    session()->flash('message', 'You are not active staff of the institute!');
+                    session()->flash('alert-type', 'warning');
+
+                    return redirect(route('institutes.index'));
+                }
+            }
+            
+        }
+        session()->flash('message', 'You are not staff of the institute!');
+        session()->flash('alert-type', 'warning');
+
+        return redirect(route('institutes.index'));
+        
+        
     }
 
     /**
