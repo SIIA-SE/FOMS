@@ -14,10 +14,12 @@
             html, body {
                 background-color: #fff;
                 background-image: url('bg.jpg');
+                background-size: cover;
                 color: #636b6f;
                 font-family: 'Nunito', sans-serif;
                 font-weight: 200;
-                height: 100vh;
+                width: 100%;
+                height: auto;
                 margin: 0;
             }
 
@@ -47,6 +49,7 @@
                 text-align: right;
                 color: white;
                 font-weight: bold;
+                font-size: 1vw;
             }
 
             .title {
