@@ -103,9 +103,9 @@
                         <label for="gender">Gender</label>
                         <select class="form-control @error('gender') is-invalid @enderror" name="gender" value="{{ isset($customer) ? $customer->gender : old('gender') }}">
                         <option selected disabled>Select...</option>
-                        <option value="Male" @if($customer->gender == 'Male') selected @endif>Male</option>
-                        <option value="Female" @if($customer->gender == 'Female') selected @endif>Female</option>
-                        <option value="Other" @if($customer->gender == 'Other') selected @endif>Other</option>
+                        <option value="Male" @if(isset($customer)) $customer->gender == 'Male' selected @endif>Male</option>
+                        <option value="Female" @if(isset($customer))  $customer->gender == 'Female' selected @endif>Female</option>
+                        <option value="Other" @if(isset($customer)) $customer->gender == 'Other' selected @endif>Other</option>
                         </select>
                         @error('gender')
                             <span class="invalid-feedback" role="alert">
@@ -182,7 +182,7 @@
                                     $district = \App\District::find(old('district'));
                                 @endphp
                                 <option value="{{ old('district') }}" selected>{{ $district->name}}</option>
-                            @else
+                            @elseif(isset($customer))
                                 <option value="{{ $customer->district }}" selected>{{ \App\District::find($customer->district)->name }}</option>
                             @endif 
                         
@@ -204,7 +204,7 @@
                                     $dsdivision = \App\DSDivision::find(old('dsdivision'));
                                 @endphp
                                 <option value="{{ old('dsdivision') }}" selected>{{ $dsdivision->name}}</option>
-                            @else
+                            @elseif(isset($customer))
                                 <option value="{{ $customer->ds_division }}" selected>{{ \App\DSDivision::find($customer->ds_division)->name }}</option>
                             @endif
                         
@@ -225,7 +225,7 @@
                                     $gndivision = \App\GNDivision::find(old('gndivision'));
                                 @endphp
                                 <option value="{{ old('gndivision') }}" selected>{{ $gndivision->name}}</option>
-                            @else
+                            @elseif(isset($customer))
                                 <option value="{{ $customer->gn_division }}" selected>{{ \App\GNDivision::find($customer->gn_division)->name }}</option>
                             @endif
                         
