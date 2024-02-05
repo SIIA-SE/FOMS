@@ -101,11 +101,10 @@
                 <div class="col-2">
                     <div class="form-group">
                         <label for="gender">Gender</label>
-                        <select class="form-control @error('gender') is-invalid @enderror" name="gender" value="{{ isset($customer) ? $customer->gender : old('gender') }}">
-                        <option selected disabled>Select...</option>
-                        <option value="Male" @if(isset($customer)) $customer->gender == 'Male' selected @endif>Male</option>
-                        <option value="Female" @if(isset($customer))  $customer->gender == 'Female' selected @endif>Female</option>
-                        <option value="Other" @if(isset($customer)) $customer->gender == 'Other' selected @endif>Other</option>
+                        <select class="form-control @error('gender') is-invalid @enderror" name="gender">
+                        <option value="" @if(old('gender')== '') selected disabled @elseif(isset($customer)) @if($customer->gender=='') selected disabled @endif @endif>Select Gender</option>
+                        <option value="Male" @if(old('gender')== 'Male') selected @elseif(isset($customer)) @if($customer->gender=='Male') selected @endif @endif>Male</option>
+                        <option value="Female" @if(old('gender')== 'Female') selected @elseif(isset($customer)) @if($customer->gender=='Female') selected @endif @endif>Female</option>
                         </select>
                         @error('gender')
                             <span class="invalid-feedback" role="alert">
