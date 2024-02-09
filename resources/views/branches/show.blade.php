@@ -87,7 +87,12 @@
             <p name="visit_remarks"><b>Remarks:</b> {{ $visit->remarks }}</p>
             <div class="queueControlls float-right">
               <button id="customerInfoButton" class="btn btn-sm btn-primary mr-1" data-toggle="modal" data-target="#customerInfo" data-target-id="{{ $visit->customer->nic_no}}"><i class="bi bi-person-video2"></i> Customer Info</button>
-              <button id="callupTokenButton" class="btn btn-sm btn-success mr-1" data-toggle="modal" data-target="#callupToken" data-target-id="{{ $visit->token_no }}" data-visit-id="{{ $visit->id }}"><i class="bi bi-display-fill"></i> Callup Customer</button>
+
+              @foreach(Auth::user()->staff->where('institute_id', $institute->id) as $userStaff)
+                @if($userStaff->branch_id == $branch->id || $staffRole == 'manager')
+                  <button id="callupTokenButton" class="btn btn-sm btn-success mr-1" data-toggle="modal" data-target="#callupToken" data-target-id="{{ $visit->token_no }}" data-visit-id="{{ $visit->id }}"><i class="bi bi-display-fill"></i> Callup Customer</button>
+                @endif
+              @endforeach
             </div>
           </div>
           

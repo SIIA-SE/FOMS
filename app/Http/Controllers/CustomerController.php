@@ -78,7 +78,7 @@ class CustomerController extends Controller
             $data = Institute::find($request->institute_id)->customers()->where(function (Builder $query) use ($request) {
                 return $query->where('nic_no', 'LIKE', $request->name . '%')
                              ->orWhere('first_name', 'LIKE', $request->name . '%');
-            })->get();
+            })->take(5)->get();
 
             /* $data = DB::table('institutes')
             ->join('customers', 'institutes.id', '=', 'customers.institute_id')
@@ -124,7 +124,7 @@ class CustomerController extends Controller
             $data = Institute::find($request->institute_id)->customers()->where(function (Builder $query) use ($request) {
                 return $query->where('nic_no', 'LIKE', $request->name . '%')
                              ->orWhere('first_name', 'LIKE', $request->name . '%');
-            })->get();
+            })->take(3)->get();
 
             /* $data = DB::table('institutes')
             ->join('customers', 'institutes.id', '=', 'customers.institute_id')
