@@ -74,8 +74,8 @@
                     <tr>
                     <th scope="row">Address:</th>
                     <td>{{ $customer->address }}, 
-                        @if(isset($customer->gn_division)) {{ \App\GNDivision::find($customer->gn_division)->name }},  @else - @endif, 
-                        @if(isset($customer->ds_division)) {{ \App\DSDivision::find($customer->ds_division)->name }},  @lse - @endif, 
+                        @if(isset($customer->gn_division)) {{ \App\GNDivision::find($customer->gn_division)->name }},  @else - @endif 
+                        @if(isset($customer->ds_division)) {{ \App\DSDivision::find($customer->ds_division)->name }},  @else - @endif 
                         @if(isset($customer->district)) {{ \App\District::find($customer->district)->name }}, @else - @endif 
                         @if(isset($customer->province)) {{ \App\Province::find($customer->province)->name }} Province @else - @endif</td>
                     </tr>
