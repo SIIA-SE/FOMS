@@ -88,8 +88,8 @@
             @endif
 
             <div class="content">
-                <div style="font-weight:bold">Created By:</div>
-                <div>A.Shanojan (E1841133) <br />Bachelor of Information Technology <br />CODL, University of Moratuwa</div>
+                <div style="font-weight:bold;text-align:left;text-decoration: underline">Designed & Deveoped By:</div>
+                <div style="text-align: left;">A.SHANOJAN (SLICTS III) <br />Bachelor of Information Technology <br />University of Moratuwa</div>
                 <!-- <div class="links">
                     <a href="https://laravel.com/docs">Docs</a>
                     <a href="https://laracasts.com">Laracasts</a>
