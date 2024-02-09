@@ -82,7 +82,7 @@
           <div class="progress">
             <div class="progress-bar" role="progressbar" style="width: {{ count(\App\Institute::find($institute->id)->visits()->get()) }}%" aria-valuenow="{{ count(\App\Institute::find($institute->id)->visits()->get()) }}" aria-valuemin="0" aria-valuemax="100"></div>
           </div><br />
-          <a href="{{ route('customers.index', ['id' => $institute->id]) }}" class="btn btn-primary btn-sm"><i class="bi bi-diagram-3"></i> View</a>
+          <a href="{{ route('branches.index', ['id' => $institute->id]) }}" class="btn btn-primary btn-sm"><i class="bi bi-diagram-3"></i> View</a>
         </div>
       </div>
 

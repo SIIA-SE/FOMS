@@ -137,7 +137,7 @@ class VisitController extends Controller
             if($visit = Visit::find($request->vis_ID)){
                 $visit->status = "COMPLETED";
                 $visit->end_time = Carbon::now();
-                $visit->remarks = $request->remarks;
+                $visit->action_taken = $request->action_taken;
                 $visit->save();
 
                 session()->flash('message', 'Customer visit has been completed Successfully!');

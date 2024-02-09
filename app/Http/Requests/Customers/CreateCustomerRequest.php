@@ -27,14 +27,10 @@ class CreateCustomerRequest extends FormRequest
             'firstname' => 'required|regex:/[a-zA-Z]/|min:2',
             'lastname' => 'required|regex:/[a-zA-Z]/|min:1',
             'gender' => 'required',
-            'nic_no' => 'required|unique:customers|regex:/[vV0-9]/|min:10|max:12',
+            'nic_no' => 'nullable|unique:customers|regex:/[vV0-9]/|min:10|max:12',
             'address' => 'required|regex:/[a-z,A-Z\d\s\/\-]/',
             'contact_no' => 'required|size:9|regex:/\d/',
-            'email' => 'email|nullable',
-            'province' => 'required',
-            'district' => 'required',
-            'dsdivision' => 'required',
-            'gndivision' => 'required'
+            'email' => 'email|nullable'
         ];
     }
 }

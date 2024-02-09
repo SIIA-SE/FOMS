@@ -74,10 +74,10 @@
                     <tr>
                     <th scope="row">Address:</th>
                     <td>{{ $customer->address }}, 
-                        {{ \App\GNDivision::find($customer->gn_division)->name }}, 
-                        {{ \App\DSDivision::find($customer->ds_division)->name }}, 
-                        {{ \App\District::find($customer->district)->name }}, 
-                        {{ \App\Province::find($customer->province)->name }} Province</td>
+                        @if(isset($customer->gn_division)) {{ \App\GNDivision::find($customer->gn_division)->name }},  @else - @endif, 
+                        @if(isset($customer->ds_division)) {{ \App\DSDivision::find($customer->ds_division)->name }},  @lse - @endif, 
+                        @if(isset($customer->district)) {{ \App\District::find($customer->district)->name }}, @else - @endif 
+                        @if(isset($customer->province)) {{ \App\Province::find($customer->province)->name }} Province @else - @endif</td>
                     </tr>
                     <tr>
                     <th scope="row" class="col-md-2">Contact No:</th>
@@ -189,6 +189,7 @@
                           <p class="border border-dark rounded d-inline-block mr-2 ml-0 p-1"><i class="bi bi-ticket-perforated"></i> {{ $visit->token_no }} </p>
                           <p><b>Purpose:</b> {{ $visit->purpose }}</p>
                           <p><b>Remarks:</b> {{ $visit->remarks }}</p>
+                          <p><b>Actions Taken:</b> {{ $visit->action_taken }}</p>
                         </div>
                       </div>
                     </div>

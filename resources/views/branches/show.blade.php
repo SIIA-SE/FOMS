@@ -180,9 +180,9 @@
         </div>
         <div class="modal-body">
           <div class="form-group">
-            <label for="remarks">Remarks</label><small class="d-inline-block form-text text-muted ml-1">(Optional)</small>
-            <textarea class="form-control @error('remarks') is-invalid @enderror" name="remarks" rows="3"></textarea>
-            @error('remarks')
+            <label for="action_taken">Actions Taken</label><small class="d-inline-block form-text text-muted ml-1">(Optional)</small>
+            <textarea class="form-control @error('action_taken') is-invalid @enderror" name="action_taken" rows="3"></textarea>
+            @error('action_taken')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
                 </span>

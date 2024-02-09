@@ -103,9 +103,11 @@
                         <label for="gender">Gender</label>
                         <select class="form-control @error('gender') is-invalid @enderror" name="gender" value="{{ isset($customer) ? $customer->gender : old('gender') }}">
                         <option selected disabled>Select...</option>
-                        <option value="Male" @if(isset($customer)) $customer->gender == 'Male' selected @endif>Male</option>
-                        <option value="Female" @if(isset($customer))  $customer->gender == 'Female' selected @endif>Female</option>
-                        <option value="Other" @if(isset($customer)) $customer->gender == 'Other' selected @endif>Other</option>
+                        @if(isset($customer->gender))
+                            <option value="Male" @if($customer->gender == 'Male') selected @endif>Male</option>
+                            <option value="Female" @if($customer->gender == 'Female') selected @endif>Female</option>
+                            <option value="Other" @if($customer->gender == 'Other') selected @endif>Other</option>
+                        @endif
                         </select>
                         @error('gender')
                             <span class="invalid-feedback" role="alert">
@@ -160,9 +162,15 @@
                     <div class="form-group">
                         <label for="province">Province</label>
                         <select class="form-control @error('province') is-invalid @enderror" name="province" id="province" value="{{ isset($customer) ? $customer->province : ''}}">
-                            <option @if(old('province')=='') disabled @endif>Select...</option>
+                            <option @if(old('province')=='') disabled selected @endif>Select...</option>
                             @foreach(App\Province::all() as $province)
-                                <option value="{{$province->id}}" @if(old('province') == $province->id) || ($province->id == $customer->province)  selected @endif> {{$province->name}}</option>
+                                @if(isset($customer->province) && $customer->province == $province->id)
+                                    @php $select= "selected"; @endphp
+                                @else 
+                                    @php $select=""; @endphp
+                                @endif
+                                    <option value="{{$province->id}}" @if(old('province') == $province->id) selected @else @php echo $select; @endphp @endif> {{$province->name}}</option>
+                                
                             @endforeach
                         </select>
                         @error('province')
@@ -182,7 +190,7 @@
                                     $district = \App\District::find(old('district'));
                                 @endphp
                                 <option value="{{ old('district') }}" selected>{{ $district->name}}</option>
-                            @elseif(isset($customer))
+                            @elseif(isset($customer->district))
                                 <option value="{{ $customer->district }}" selected>{{ \App\District::find($customer->district)->name }}</option>
                             @endif 
                         
@@ -204,7 +212,7 @@
                                     $dsdivision = \App\DSDivision::find(old('dsdivision'));
                                 @endphp
                                 <option value="{{ old('dsdivision') }}" selected>{{ $dsdivision->name}}</option>
-                            @elseif(isset($customer))
+                            @elseif(isset($customer->ds_division))
                                 <option value="{{ $customer->ds_division }}" selected>{{ \App\DSDivision::find($customer->ds_division)->name }}</option>
                             @endif
                         
@@ -225,8 +233,8 @@
                                     $gndivision = \App\GNDivision::find(old('gndivision'));
                                 @endphp
                                 <option value="{{ old('gndivision') }}" selected>{{ $gndivision->name}}</option>
-                            @elseif(isset($customer))
-                                <option value="{{ $customer->gn_division }}" selected>{{ \App\GNDivision::find($customer->gn_division)->name }}</option>
+                            @elseif(isset($customer->gn_division))
+                                <option value= "{{ $customer->gn_division }}" selected>{{ \App\GNDivision::find($customer->gn_division)->name }}</option>
                             @endif
                         
                         

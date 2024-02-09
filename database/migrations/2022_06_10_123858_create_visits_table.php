@@ -24,6 +24,7 @@ class CreateVisitsTable extends Migration
             $table->string('status');
             $table->dateTime('start_time')->nullable();
             $table->dateTime('end_time')->nullable();
+            $table->string('action_taken')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
