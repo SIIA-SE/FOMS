@@ -6,7 +6,7 @@
   @if($staffRole == 'manager' || $staffRole == 'frontdeskuser')
   <a href="{{ route('customers.index', ['id' => $institute->id]) }}" class="list-group-item list-group-item-action {{ Route::is('customers.index') ? 'active' : '' }}"><i class="bi bi-person-video2"></i> Customers</a>
   @endif
-  <a href="{{ route('branches.index', ['id' => $institute->id]) }}" class="list-group-item list-group-item-action {{ Route::is('branches.index') ? 'active' : '' }}"><i class="bi bi-diagram-3"></i> Branches</a>
+  <a href="{{ route('branches.index', ['id' => $institute->id]) }}" class="list-group-item list-group-item-action {{ Route::is('branches.index') ? 'active' : '' }}"><i class="bi bi-diagram-3-fill"></i> Branches</a>
 
 </div>
 
@@ -28,7 +28,8 @@
 @foreach(Auth::user()->staff->where('institute_id', $institute->id) as $userStaff)
   @if($userStaff->branch_id == $branch->id || $staffRole == 'manager')
     <div class="list-group">
-      <a id="serve_list" href="#" class="list-group-item list-group-item-action"><i class="bi bi-stickies-fill"></i> Serving List</a>
+    <a href="{{ route('branches.show', $branch->id) }}" class="list-group-item list-group-item-action"><i class="bi bi-people-fill"></i> Customer Queue <span class="badge badge-danger">@if(count(App\Institute::find($institute->id)->visits()->where('status', 'IN QUEUE')->where('branch_id', $branch->id)->get()) > 0) {{ count(App\Institute::find($institute->id)->visits()->where('status', 'IN QUEUE')->where('branch_id', $branch->id)->get()) }} @endif</span></a>
+      <a id="serve_list" href="#" class="list-group-item list-group-item-action"><i class="bi bi-stickies-fill"></i> Serving List <span class="badge badge-danger">@if(count(App\Institute::find($institute->id)->visits()->where('status', 'SERVING')->where('branch_id', $branch->id)->get()) > 0) {{ count(App\Institute::find($institute->id)->visits()->where('status', 'SERVING')->where('branch_id', $branch->id)->get()) }} @endif</span></a>
     </div>
   @endif
 @endforeach

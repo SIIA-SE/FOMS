@@ -40,6 +40,8 @@ class AllVisitsExport implements FromQuery, WithHeadings, WithMapping, WithEvent
             $visit->status,
             $visit->start_time,
             $visit->end_time,
+            $visit->action_taken,
+            $visit->created_at,
         ];
     }
 
@@ -56,6 +58,8 @@ class AllVisitsExport implements FromQuery, WithHeadings, WithMapping, WithEvent
             'Status',
             'Start Time',
             'End Time',
+            'Action Taken',
+            'Visited On',
         ];
     }
 
@@ -63,7 +67,7 @@ class AllVisitsExport implements FromQuery, WithHeadings, WithMapping, WithEvent
     {
         return [
             AfterSheet::class => function(AfterSheet $event) {
-                $event->sheet->getStyle('A1:J1')->applyFromArray([
+                $event->sheet->getStyle('A1:L1')->applyFromArray([
                     'font' => [
                         'bold' => true,
                     ]

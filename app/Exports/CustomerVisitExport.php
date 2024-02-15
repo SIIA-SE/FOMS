@@ -41,6 +41,8 @@ class CustomerVisitExport implements FromQuery, WithMapping, ShouldAutoSize, Wit
             $visit->status,
             $visit->start_time,
             $visit->end_time,
+            $visit->action_taken,
+            $visit->created_at,
         ];
     }
 
@@ -57,6 +59,8 @@ class CustomerVisitExport implements FromQuery, WithMapping, ShouldAutoSize, Wit
             'Status',
             'Start Time',
             'End Time',
+            'Action Taken',
+            'Visited On',
         ];
     }
 
@@ -64,7 +68,7 @@ class CustomerVisitExport implements FromQuery, WithMapping, ShouldAutoSize, Wit
     {
         return [
             AfterSheet::class => function(AfterSheet $event) {
-                $event->sheet->getStyle('A1:J1')->applyFromArray([
+                $event->sheet->getStyle('A1:L1')->applyFromArray([
                     'font' => [
                         'bold' => true,
                     ]

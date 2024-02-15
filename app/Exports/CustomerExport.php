@@ -35,6 +35,32 @@ class CustomerExport implements FromQuery, WithHeadings, WithMapping, WithEvents
 
     public function map($customer): array
     {
+        if(isset($customer->nic)){
+            $nic = $customer->nic;
+        }else{
+            $nic = NULL;
+        }
+        if(isset($customer->province)){
+            $province = Province::find($customer->province)->name;
+        }else{
+            $province = NULL;
+        }
+        if(isset($customer->district)){
+            $district = District::find($customer->district)->name;
+        }else{
+            $district = NULL;
+        }
+        if(isset($customer->ds_division)){
+            $ds_division = DSDivision::find($customer->ds_division)->name;
+        }else{
+            $ds_division = NULL;
+        }
+        if(isset($customer->gn_division)){
+            $gn_division = GNDivision::find($customer->gn_division)->name;
+        }else{
+            $gn_division = NULL;
+        }
+
         return [
             $customer->id,
             $customer->institute->name,
@@ -45,10 +71,12 @@ class CustomerExport implements FromQuery, WithHeadings, WithMapping, WithEvents
             $customer->address,
             $customer->contact_no,
             $customer->email,
-            Province::find($customer->province)->name,
-            District::find($customer->district)->name,
-            DSDivision::find($customer->ds_division)->name,
-            GNDivision::find($customer->gn_division)->name,
+            $province,
+            $district,
+            $ds_division,
+            $gn_division,
+            
+            
         ];
     }
 

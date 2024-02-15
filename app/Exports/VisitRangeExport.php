@@ -44,6 +44,7 @@ class VisitRangeExport implements FromQuery, WithMapping, ShouldAutoSize, WithHe
             $visit->status,
             $visit->start_time,
             $visit->end_time,
+            $visit->action_taken,
             $visit->created_at,
         ];
     }
@@ -61,6 +62,7 @@ class VisitRangeExport implements FromQuery, WithMapping, ShouldAutoSize, WithHe
             'Status',
             'Start Time',
             'End Time',
+            'Action Taken',
             'Visited On',
         ];
     }
@@ -69,7 +71,7 @@ class VisitRangeExport implements FromQuery, WithMapping, ShouldAutoSize, WithHe
     {
         return [
             AfterSheet::class => function(AfterSheet $event) {
-                $event->sheet->getStyle('A1:K1')->applyFromArray([
+                $event->sheet->getStyle('A1:L1')->applyFromArray([
                     'font' => [
                         'bold' => true,
                     ]
