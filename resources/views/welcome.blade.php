@@ -88,7 +88,7 @@
             @endif
 
             <div class="content">
-                <div style="font-weight:bold;text-align:left;text-decoration: underline">Designed & Deveoped By:</div>
+                <div style="font-weight:bold;text-align:left;text-decoration: underline">Designed & Developed By:</div>
                 <div style="text-align: left;">A.SHANOJAN (SLICTS III) <br />Bachelor of Information Technology <br />University of Moratuwa</div>
                 <!-- <div class="links">
                     <a href="https://laravel.com/docs">Docs</a>

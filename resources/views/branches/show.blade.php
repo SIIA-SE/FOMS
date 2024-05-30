@@ -26,7 +26,7 @@
 <br />
 
 @foreach(Auth::user()->staff->where('institute_id', $institute->id) as $userStaff)
-  @if($userStaff->branch_id == $branch->id || $staffRole == 'manager')
+  @if($userStaff->branch_id == $branch->id || $staffRole == 'manager' || $staffRole == 'frontdeskuser')
     <div class="list-group">
     <a href="{{ route('branches.show', $branch->id) }}" class="list-group-item list-group-item-action"><i class="bi bi-people-fill"></i> Customer Queue <span class="badge badge-danger">@if(count(App\Institute::find($institute->id)->visits()->where('status', 'IN QUEUE')->where('branch_id', $branch->id)->get()) > 0) {{ count(App\Institute::find($institute->id)->visits()->where('status', 'IN QUEUE')->where('branch_id', $branch->id)->get()) }} @endif</span></a>
       <a id="serve_list" href="#" class="list-group-item list-group-item-action"><i class="bi bi-stickies-fill"></i> Serving List <span class="badge badge-danger">@if(count(App\Institute::find($institute->id)->visits()->where('status', 'SERVING')->where('branch_id', $branch->id)->get()) > 0) {{ count(App\Institute::find($institute->id)->visits()->where('status', 'SERVING')->where('branch_id', $branch->id)->get()) }} @endif</span></a>
